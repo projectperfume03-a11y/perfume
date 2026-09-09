@@ -487,29 +487,13 @@ function Header() {
   }
 
   const links = [
+    { label: 'Accueil', href: '/' },
     { label: 'Collection', href: '/products' },
-    { label: 'Pyramide Olfactive', href: '/#pyramide' },
-    { label: 'L\'Atelier', href: '/#atelier' },
-    { label: 'Le Journal', href: '/#journal' },
     { label: 'Contact & Conciergerie', href: '/contact' }
   ]
 
   return (
     <>
-      {/* Top Luxury Announcement Bar */}
-      <div className="announcement-bar">
-        <div className="announcement-content">
-          <span>✦ MAISON DE HAUTE PARFUMERIE</span>
-          <span className="separator">·</span>
-          <span>Livraison Offerte en Tunisie dès {FREE_SHIPPING_THRESHOLD} TND</span>
-          <span className="separator">·</span>
-          <span>Paiement à la livraison</span>
-        </div>
-        <Link to="/contact" className="announcement-cta">
-          <Sparkles size={13} /> Conciergerie Privée
-        </Link>
-      </div>
-
       <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
         <div className="header-container">
           <button className="mobile-menu-btn" onClick={() => setOpen(!open)} aria-label="Menu de navigation" aria-expanded={open}>
@@ -536,19 +520,6 @@ function Header() {
 
           {/* Header Action Buttons */}
           <div className="header-actions">
-            <button
-              className="action-icon-btn"
-              onClick={() => setSearchOpen(!searchOpen)}
-              aria-label="Rechercher un parfum"
-            >
-              <Search size={19} />
-            </button>
-
-            <Link to="/products" className="action-icon-btn wishlist-btn" aria-label="Favoris">
-              <Heart size={19} />
-              {wishlist.length > 0 && <span className="action-badge">{wishlist.length}</span>}
-            </Link>
-
             <button
               className="action-icon-btn bag-btn"
               onClick={() => setIsCartOpen(true)}
@@ -967,9 +938,9 @@ function Home() {
               <Link to="/products" className="button button-gold">
                 Explorer la Collection <ArrowRight size={17} />
               </Link>
-              <a href="#pyramide" className="button button-glass">
+              <Link to="/products" className="button button-glass">
                 Découvrir l'Art Olfactif
-              </a>
+              </Link>
             </div>
 
             {/* Reassurance Micro Badges */}
@@ -1016,32 +987,6 @@ function Home() {
         </div>
       </section>
 
-      {/* BRAND VALUES STRIP */}
-      <section className="brand-pillars-section">
-        <div className="pillars-grid">
-          <div className="pillar-card">
-            <div className="pillar-icon-box"><Award size={24} /></div>
-            <h3>Haute Concentration</h3>
-            <p>Formulés en Extraits de Parfum (jusqu'à 35%), assurant un sillage dense et une tenue exceptionnelle.</p>
-          </div>
-          <div className="pillar-card">
-            <div className="pillar-icon-box"><Droplets size={24} /></div>
-            <h3>Matières Premières Nobles</h3>
-            <p>Rose de Mai de Grasse, Santal de Mysore, Oud pur et Ambre gris récoltés dans le respect des traditions.</p>
-          </div>
-          <div className="pillar-card">
-            <div className="pillar-icon-box"><Sparkles size={24} /></div>
-            <h3>Confection d'Exception</h3>
-            <p>Chaque flacon est le fruit d'une longue maturation pour libérer la pleine profondeur des accords.</p>
-          </div>
-          <div className="pillar-card">
-            <div className="pillar-icon-box"><ShieldCheck size={24} /></div>
-            <h3>Paiement à la Livraison</h3>
-            <p>Commandez en toute sérénité. Vérifiez votre colis à la réception avec livraison rapide dans toute la Tunisie.</p>
-          </div>
-        </div>
-      </section>
-
       {/* SIGNATURE EDIT (PRODUCT CATALOG) */}
       <section className="section signature-section">
         <div className="section-header-centered">
@@ -1080,222 +1025,6 @@ function Home() {
           <Link to="/products" className="button button-dark">
             Consulter Toute la Collection <ArrowRight size={16} />
           </Link>
-        </div>
-      </section>
-
-      {/* THE OLFACTORY PYRAMID EXPERIENCE */}
-      <section className="olfactory-pyramid-section" id="pyramide">
-        <div className="pyramid-container">
-          <div className="pyramid-intro">
-            <span className="eyebrow gold">LE SECRET DE LA MAISON</span>
-            <h2>La Pyramide Olfactive ROYA</h2>
-            <p>
-              Un grand parfum ne se résume pas à sa première impression. Il vit, respire et se transforme sur la peau au fil des heures. Voici comment une création ROYA révèle sa magie :
-            </p>
-          </div>
-
-          <div className="pyramid-levels-grid">
-            {/* Level 1: Tête */}
-            <div className="pyramid-level-card head">
-              <div className="level-badge">0 à 30 minutes</div>
-              <div className="level-icon"><Sparkles size={22} /></div>
-              <h3>Notes de Tête</h3>
-              <span className="level-sub">L'envolée lumineuse</span>
-              <p>La première étincelle. Des agrumes fusants, des épices fraîches et des accords vifs qui captivent instantanément l'attention dès la vaporisation.</p>
-              <div className="level-examples">
-                <span>Bergamote de Calabre</span>
-                <span>Mandarine</span>
-                <span>Poivre Rose</span>
-              </div>
-            </div>
-
-            {/* Level 2: Cœur */}
-            <div className="pyramid-level-card heart">
-              <div className="level-badge">30 min à 4 heures</div>
-              <div className="level-icon"><Flame size={22} /></div>
-              <h3>Notes de Cœur</h3>
-              <span className="level-sub">L'âme du parfum</span>
-              <p>La véritable personnalité de la fragrance. Les fleurs nobles et les accords balsamiques émergent pour déployer votre sillage distinctif dans la pièce.</p>
-              <div className="level-examples">
-                <span>Rose de Mai</span>
-                <span>Iris de Florence</span>
-                <span>Jasmin Sambac</span>
-              </div>
-            </div>
-
-            {/* Level 3: Fond */}
-            <div className="pyramid-level-card base">
-              <div className="level-badge">4 à 24+ heures</div>
-              <div className="level-icon"><Clock size={22} /></div>
-              <h3>Notes de Fond</h3>
-              <span className="level-sub">L'empreinte inaltérable</span>
-              <p>La signature mémorable. Des bois précieux, des résines et des vanilles de Madagascar qui s'ancrent sur votre peau et vos vêtements jusqu'au lendemain.</p>
-              <div className="level-examples">
-                <span>Oud Royal</span>
-                <span>Ambre Gris</span>
-                <span>Santal Mysore</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* L'ATELIER & SAVOIR-FAIRE */}
-      <section className="atelier-section" id="atelier">
-        <div className="atelier-grid">
-          <div className="atelier-image-col">
-            <div className="atelier-img-frame">
-              <img
-                src="/roya-atelier.jpg"
-                alt="L'Atelier de Parfumerie Maison ROYA"
-                className="atelier-img"
-              />
-              <div className="atelier-badge-overlay">
-                <img src="/roya-crest-gold.png" alt="" />
-                <span>Artisan Parfumeur</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="atelier-copy-col">
-            <span className="eyebrow">SAVOIR-FAIRE & MATIÈRES NOBLES</span>
-            <h2>Chaque goutte est un poème sans paroles.</h2>
-            <p>
-              Chez Maison ROYA, nous refusons les compromis industriels. Nos parfums sont élaborés selon les méthodes ancestrales de la haute parfumerie française, alliant rigueur technique et liberté créative.
-            </p>
-            <p>
-              De la pesée méticuleuse des résines jusqu'à la mise en flacon, chaque étape est orchestrée pour offrir un équilibre parfait entre puissance du sillage et raffinement discret.
-            </p>
-
-            <div className="atelier-quote">
-              <p>« Un parfum n'est pas un accessoire, c'est l'armure invisible de votre élégance. »</p>
-              <small>— Le Maître Parfumeur ROYA</small>
-            </div>
-
-            <div className="atelier-actions">
-              <Link to="/contact" className="button button-gold">
-                Prendre Rendez-vous Conciergerie <ArrowRight size={16} />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CUSTOMER REVIEWS & PRAISE */}
-      <section className="testimonials-section">
-        <div className="section-header-centered">
-          <span className="eyebrow gold">ÉLOGES & TÉMOIGNAGES</span>
-          <h2>Ce que nos passionnés disent de nous</h2>
-          <p className="section-lead">Des retours authentiques de clients amoureux de notre univers.</p>
-        </div>
-
-        <div className="testimonials-grid">
-          <div className="testimonial-card">
-            <div className="stars-row">
-              {[...Array(5)].map((_, i) => <Star key={i} size={15} fill="#d4af37" color="#d4af37" />)}
-            </div>
-            <p className="testi-quote">
-              « Ambre Impérial est tout simplement magistral. La tenue dépasse largement 24 heures et j'ai reçu des compliments toute la journée au bureau. Une qualité digne des plus grands salons parisiens. »
-            </p>
-            <div className="testi-author">
-              <strong>Selim B.</strong>
-              <small>Client Vérifié · Tunis</small>
-            </div>
-          </div>
-
-          <div className="testimonial-card featured">
-            <div className="stars-row">
-              {[...Array(5)].map((_, i) => <Star key={i} size={15} fill="#d4af37" color="#d4af37" />)}
-            </div>
-            <p className="testi-quote">
-              « Rose Solaire a ce côté lumineux et luxueux qu'on ne trouve nulle part ailleurs. Le flacon est lourd, magnifique, et la livraison à La Marsa a été effectuée le lendemain de ma commande. Bravo ROYA ! »
-            </p>
-            <div className="testi-author">
-              <strong>Meriem K.</strong>
-              <small>Cliente Vérifiée · La Marsa</small>
-            </div>
-          </div>
-
-          <div className="testimonial-card">
-            <div className="stars-row">
-              {[...Array(5)].map((_, i) => <Star key={i} size={15} fill="#d4af37" color="#d4af37" />)}
-            </div>
-            <p className="testi-quote">
-              « J'ai commandé Oud Majestueux sur recommandation sur-mesure de la Maison. Le service conciergerie a été d'une écoute remarquable. L'odeur est riche, envoûtante et ne ressemble à aucune autre. Un chef-d'œuvre. »
-            </p>
-            <div className="testi-author">
-              <strong>Karim M.</strong>
-              <small>Client Vérifié · Sousse</small>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* JOURNAL / BLOG SECTION */}
-      <section className="journal-section" id="journal">
-        <div className="section-header-split">
-          <div>
-            <span className="eyebrow">LE JOURNAL DE LA MAISON</span>
-            <h2>Chroniques Olfactives</h2>
-          </div>
-          <Link to="/products" className="text-link">
-            Consulter les articles <ArrowRight size={15} />
-          </Link>
-        </div>
-
-        <div className="journal-cards-grid">
-          <article className="journal-post">
-            <div className="journal-art-box art-one">
-              <span className="journal-category">GUIDE DU PARFUMEUR</span>
-            </div>
-            <div className="journal-body">
-              <span className="journal-date">08 Septembre 2026</span>
-              <h3>L'art de vaporiser son parfum pour maximiser son sillage</h3>
-              <p>Découvrez les points de pulsation stratégiques et l'importance de l'hydratation cutanée pour décupler la tenue.</p>
-            </div>
-          </article>
-
-          <article className="journal-post">
-            <div className="journal-art-box art-two">
-              <span className="journal-category">INGRÉDIENTS NOBLES</span>
-            </div>
-            <div className="journal-body">
-              <span className="journal-date">24 Août 2026</span>
-              <h3>Le mystère de l'Ambre Gris et du Santal de Mysore</h3>
-              <p>Plongez dans l'histoire des matières premières les plus convoitées de la haute parfumerie mondiale.</p>
-            </div>
-          </article>
-
-          <article className="journal-post">
-            <div className="journal-art-box art-three">
-              <span className="journal-category">RITUEL ROYA</span>
-            </div>
-            <div className="journal-body">
-              <span className="journal-date">12 Août 2026</span>
-              <h3>Comment choisir sa signature olfactive selon la saison</h3>
-              <p>Des accords frais de l'été aux résines chaleureuses de l'automne, trouvez l'accord parfait à votre humeur.</p>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      {/* VIP CLUB / NEWSLETTER */}
-      <section className="vip-club-section">
-        <div className="vip-container">
-          <div className="vip-crest-seal">
-            <img src="/roya-crest-gold.png" alt="" />
-          </div>
-          <span className="eyebrow gold">LE CERCLE PRIVÉ ROYA</span>
-          <h2>Rejoignez notre cercle d'initiés</h2>
-          <p>
-            Bénéficiez de <strong>10% de réduction</strong> sur votre première commande, d'invitations privées à nos avant-premières et d'échantillons offerts.
-          </p>
-
-          <form className="vip-form" onSubmit={(e) => { e.preventDefault(); alert('Bienvenue dans le Cercle Privé ROYA. Votre code privilège est ROYA10.') }}>
-            <input type="email" placeholder="Votre adresse email personnelle..." required />
-            <button type="submit" className="button button-gold">Rejoindre le Cercle</button>
-          </form>
-          <small className="vip-disclaimer">Vos données restent strictement confidentielles. Aucun pourriel.</small>
         </div>
       </section>
 
@@ -2218,14 +1947,13 @@ function Footer() {
           <Link to="/products?cat=Femme">Pour Elle</Link>
           <Link to="/products?cat=Homme">Pour Lui</Link>
           <Link to="/products?cat=Unisexe">Extraits Mixtes</Link>
-          <a href="/#pyramide">Pyramide Olfactive</a>
+          <Link to="/products">Découvrir la Maison</Link>
         </div>
 
         <div className="footer-links-col">
           <span className="footer-heading">LA MAISON</span>
-          <a href="/#atelier">L'Atelier & Philosophie</a>
-          <a href="/#journal">Le Journal du Sillage</a>
           <Link to="/contact">Conciergerie & Contact</Link>
+          <Link to="/about">Notre Philosophie</Link>
           <Link to="/admin/login">Espace Studio Admin</Link>
         </div>
 
@@ -2497,14 +2225,10 @@ function AdminDashboard() {
       .catch(() => {
         setData({
           products: initialProducts.length,
-          orders: 1,
-          revenue: 127,
-          newMessages: 1,
-          statuses: [
-            { _id: 'pending', count: 1 },
-            { _id: 'confirmed', count: 0 },
-            { _id: 'delivered', count: 0 }
-          ],
+          orders: 0,
+          revenue: 0,
+          newMessages: 0,
+          statuses: [],
           lowStock: [],
           recentOrders: []
         })

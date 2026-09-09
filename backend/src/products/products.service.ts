@@ -28,6 +28,12 @@ export class ProductsService {
     return product;
   }
 
+  async findById(id: string) {
+    const product = await this.productModel.findOne({ _id: id, active: true, archived: false }).lean();
+    if (!product) throw new NotFoundException('Product not found');
+    return product;
+  }
+
   create(payload: Partial<Product>) { return this.productModel.create(payload); }
 
   update(id: string, payload: Partial<Product>) { return this.productModel.findByIdAndUpdate(id, payload, { new: true, runValidators: true }).orFail(); }

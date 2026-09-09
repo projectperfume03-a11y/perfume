@@ -11,14 +11,42 @@ export class OrdersService {
   async create(payload: { items: { productId: string; quantity: number }[]; shippingAddress: Record<string, string>; notes?: string; deliveryFee?: number }) {
     if (!payload.items?.length) throw new BadRequestException('Order must contain at least one item');
     const items = await Promise.all(payload.items.map(async (line) => {
-      const product = await this.productsService.findBySlug(line.productId).catch(() => null);
-      if (!product || (product.stockType === 'limited' && product.quantity < line.quantity)) throw new BadRequestException(`Product ${line.productId} is unavailable`);
-      if (product.stockType === 'limited' && !(await this.productsService.reserve(product.slug, line.quantity))) throw new BadRequestException(`Product ${line.productId} sold out during checkout`);
-      return { productId: String(product._id), productName: product.name, image: product.images?.[0]?.url, quantity: line.quantity, unitPrice: product.price, subtotal: product.price * line.quantity };
+      if (!line?.productId) {
+        throw new BadRequestException('Each order item must include a product reference');
+      }
+
+      const product = await this.productsService.findBySlug(line.productId)
+        .catch(() => this.productsService.findById(line.productId).catch(() => null));
+
+      if (!product || (product.stockType === 'limited' && product.quantity < line.quantity)) {
+        throw new BadRequestException(`Product ${line.productId} is unavailable`);
+      }
+
+      if (product.stockType === 'limited' && !(await this.productsService.reserve(product.slug, line.quantity))) {
+        throw new BadRequestException(`Product ${line.productId} sold out during checkout`);
+      }
+
+      return {
+        productId: String(product._id),
+        productName: product.name,
+        image: product.images?.[0]?.url,
+        quantity: line.quantity,
+        unitPrice: product.price,
+        subtotal: product.price * line.quantity
+      };
     }));
+
     const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
     const orderNumber = `PF-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
-    return this.orderModel.create({ orderNumber, items, subtotal, deliveryFee: payload.deliveryFee || 0, total: subtotal + (payload.deliveryFee || 0), shippingAddress: payload.shippingAddress, notes: payload.notes });
+    return this.orderModel.create({
+      orderNumber,
+      items,
+      subtotal,
+      deliveryFee: payload.deliveryFee || 0,
+      total: subtotal + (payload.deliveryFee || 0),
+      shippingAddress: payload.shippingAddress,
+      notes: payload.notes
+    });
   }
 
   findAll() { return this.orderModel.find().sort({ createdAt: -1 }).limit(100).lean(); }
