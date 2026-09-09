@@ -1100,111 +1100,120 @@ function Products() {
       </div>
 
       <section className="section catalog-page-content">
-        {/* Filters Toolbar */}
-        <div className="catalog-toolbar">
-          <div className="search-input-box">
-            <Search size={16} />
-            <input
-              type="text"
-              placeholder="Rechercher par nom, note olfactive (Oud, Rose, Ambre...)..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            {query && <button onClick={() => setQuery('')} className="clear-query"><X size={15} /></button>}
-          </div>
+        <div className="catalog-layout">
+          <aside className="catalog-sidebar">
+            <div className="catalog-toolbar">
+              <div className="search-input-box">
+                <Search size={16} />
+                <input
+                  type="text"
+                  placeholder="Rechercher..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+                {query && <button onClick={() => setQuery('')} className="clear-query"><X size={15} /></button>}
+              </div>
 
-          <div className="filters-group">
-            {/* Gender Filter */}
-            <div className="filter-pill-group">
-              {['Tous', 'Femme', 'Homme', 'Unisexe'].map((cat) => (
+              <div className="filters-group">
+                <div className="filter-block">
+                  <span className="filter-label">Genre</span>
+                  <div className="filter-pill-group">
+                    {['Tous', 'Femme', 'Homme', 'Unisexe'].map((cat) => (
+                      <button
+                        key={cat}
+                        className={`filter-pill ${selectedCategory === cat ? 'active' : ''}`}
+                        onClick={() => setSelectedCategory(cat)}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="filter-block">
+                  <span className="filter-label">Famille</span>
+                  <div className="select-wrapper">
+                    <select
+                      value={selectedFamily}
+                      onChange={(e) => setSelectedFamily(e.target.value)}
+                      aria-label="Filtrer par famille olfactive"
+                    >
+                      {families.map((f) => <option key={f} value={f}>{f === 'Toutes' ? 'Toutes les Familles' : f}</option>)}
+                    </select>
+                    <ChevronDown size={14} className="select-arrow" />
+                  </div>
+                </div>
+
+                <div className="filter-block">
+                  <span className="filter-label">Tri</span>
+                  <div className="select-wrapper">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      aria-label="Trier les parfums"
+                    >
+                      <option value="featured">Sélection Recommandée</option>
+                      <option value="price-asc">Prix : Croissant</option>
+                      <option value="price-desc">Prix : Décroissant</option>
+                      <option value="name">Ordre Alphabétique</option>
+                    </select>
+                    <ChevronDown size={14} className="select-arrow" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <div className="catalog-main">
+            <div className="catalog-status-bar">
+              <span className="results-count">
+                <strong>{filtered.length}</strong> {filtered.length > 1 ? 'créations trouvées' : 'création trouvée'}
+              </span>
+              {(query || selectedCategory !== 'Tous' || selectedFamily !== 'Toutes') && (
                 <button
-                  key={cat}
-                  className={`filter-pill ${selectedCategory === cat ? 'active' : ''}`}
-                  onClick={() => setSelectedCategory(cat)}
+                  className="reset-filters-btn"
+                  onClick={() => {
+                    setQuery('')
+                    setSelectedCategory('Tous')
+                    setSelectedFamily('Toutes')
+                  }}
                 >
-                  {cat}
+                  Réinitialiser les filtres <X size={13} />
                 </button>
-              ))}
+              )}
             </div>
 
-            {/* Family Dropdown */}
-            <div className="select-wrapper">
-              <select
-                value={selectedFamily}
-                onChange={(e) => setSelectedFamily(e.target.value)}
-                aria-label="Filtrer par famille olfactive"
-              >
-                {families.map((f) => <option key={f} value={f}>{f === 'Toutes' ? 'Toutes les Familles' : f}</option>)}
-              </select>
-              <ChevronDown size={14} className="select-arrow" />
-            </div>
-
-            {/* Sort Dropdown */}
-            <div className="select-wrapper">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                aria-label="Trier les parfums"
-              >
-                <option value="featured">Sélection Recommandée</option>
-                <option value="price-asc">Prix : Croissant</option>
-                <option value="price-desc">Prix : Décroissant</option>
-                <option value="name">Ordre Alphabétique</option>
-              </select>
-              <ChevronDown size={14} className="select-arrow" />
-            </div>
+            {loading ? (
+              <div className="empty-catalog"><Spinner label="Découverte des fragrances..." /></div>
+            ) : filtered.length > 0 ? (
+              <div className="product-grid">
+                {filtered.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onQuickView={setQuickViewProduct}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="empty-catalog">
+                <Filter size={36} strokeWidth={1.2} />
+                <h3>Aucune fragrance ne correspond à vos critères</h3>
+                <p>Modifiez votre recherche ou réinitialisez les filtres pour découvrir nos autres créations.</p>
+                <button
+                  className="button button-gold"
+                  onClick={() => {
+                    setQuery('')
+                    setSelectedCategory('Tous')
+                    setSelectedFamily('Toutes')
+                  }}
+                >
+                  Voir tous les parfums
+                </button>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Results Counter & Active Filter Tags */}
-        <div className="catalog-status-bar">
-          <span className="results-count">
-            <strong>{filtered.length}</strong> {filtered.length > 1 ? 'créations trouvées' : 'création trouvée'}
-          </span>
-          {(query || selectedCategory !== 'Tous' || selectedFamily !== 'Toutes') && (
-            <button
-              className="reset-filters-btn"
-              onClick={() => {
-                setQuery('')
-                setSelectedCategory('Tous')
-                setSelectedFamily('Toutes')
-              }}
-            >
-              Réinitialiser les filtres <X size={13} />
-            </button>
-          )}
-        </div>
-
-        {/* Products Grid */}
-        {loading ? (
-          <div className="empty-catalog"><Spinner label="Découverte des fragrances..." /></div>
-        ) : filtered.length > 0 ? (
-          <div className="product-grid">
-            {filtered.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onQuickView={setQuickViewProduct}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="empty-catalog">
-            <Filter size={36} strokeWidth={1.2} />
-            <h3>Aucune fragrance ne correspond à vos critères</h3>
-            <p>Modifiez votre recherche ou réinitialisez les filtres pour découvrir nos autres créations.</p>
-            <button
-              className="button button-gold"
-              onClick={() => {
-                setQuery('')
-                setSelectedCategory('Tous')
-                setSelectedFamily('Toutes')
-              }}
-            >
-              Voir tous les parfums
-            </button>
-          </div>
-        )}
       </section>
 
       {quickViewProduct && (
@@ -2898,32 +2907,28 @@ function AdminProducts() {
                 </label>
               </div>
 
-              {/* Image selection with luxury presets */}
               <label>
-                <span>URL Visuel Flacon *</span>
+                <span>Visuel Flacon *</span>
                 <input
-                  required
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      setForm({ ...form, image: file.name })
+                    }
+                  }}
+                />
+              </label>
+
+              <label>
+                <span>Ou coller l’URL de l’image</span>
+                <input
+                  type="url"
                   value={form.image}
                   onChange={(e) => setForm({ ...form, image: e.target.value })}
                   placeholder="https://..."
                 />
-                <div className="image-preset-picker">
-                  <span className="preset-title">Suggestions de visuels haute joaillerie :</span>
-                  <div className="preset-thumbs">
-                    {imagePresets.map((p, idx) => (
-                      <button
-                        type="button"
-                        key={idx}
-                        className={`preset-thumb-btn ${form.image === p.url ? 'active' : ''}`}
-                        onClick={() => setForm({ ...form, image: p.url })}
-                        title={p.label}
-                      >
-                        <img src={p.url} alt="" />
-                        <span>{p.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </label>
 
               <label>
