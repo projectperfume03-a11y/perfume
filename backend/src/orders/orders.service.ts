@@ -1,65 +1,41 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ProductsService } from '../products/products.service';
-import { Order, OrderDocument } from './order.schema';
+import { Order, OrderStatus } from './schemas/order.schema';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
 export class OrdersService {
-  constructor(@InjectModel(Order.name) private readonly orderModel: Model<OrderDocument>, private readonly productsService: ProductsService) {}
+  constructor(
+    @InjectModel(Order.name) private readonly orderModel: Model<Order>,
+  ) {}
 
-  async create(payload: { items: { productId: string; quantity: number }[]; shippingAddress: Record<string, string>; notes?: string; deliveryFee?: number }) {
-    if (!payload.items?.length) throw new BadRequestException('Order must contain at least one item');
-    const items = await Promise.all(payload.items.map(async (line) => {
-      if (!line?.productId) {
-        throw new BadRequestException('Each order item must include a product reference');
-      }
-
-      const product = await this.productsService.findBySlug(line.productId)
-        .catch(() => this.productsService.findById(line.productId).catch(() => null));
-
-      if (!product || (product.stockType === 'limited' && product.quantity < line.quantity)) {
-        throw new BadRequestException(`Product ${line.productId} is unavailable`);
-      }
-
-      if (product.stockType === 'limited' && !(await this.productsService.reserve(product.slug, line.quantity))) {
-        throw new BadRequestException(`Product ${line.productId} sold out during checkout`);
-      }
-
-      return {
-        productId: String(product._id),
-        productName: product.name,
-        image: product.images?.[0]?.url,
-        quantity: line.quantity,
-        unitPrice: product.price,
-        subtotal: product.price * line.quantity
-      };
-    }));
-
-    const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
-    const orderNumber = `PF-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
-    return this.orderModel.create({
-      orderNumber,
-      items,
-      subtotal,
-      deliveryFee: payload.deliveryFee || 0,
-      total: subtotal + (payload.deliveryFee || 0),
-      shippingAddress: payload.shippingAddress,
-      notes: payload.notes
-    });
+  findAll(status?: OrderStatus) {
+    const filter = status ? { status } : {};
+    return this.orderModel.find(filter).sort({ createdAt: -1 }).exec();
   }
 
-  findAll() { return this.orderModel.find().sort({ createdAt: -1 }).limit(100).lean(); }
+  async findOne(id: string) {
+    const order = await this.orderModel.findById(id).exec();
+    if (!order) throw new NotFoundException('Commande introuvable');
+    return order;
+  }
 
-  findOne(id: string) { return this.orderModel.findById(id).orFail().lean(); }
+  create(dto: CreateOrderDto) {
+    return this.orderModel.create(dto);
+  }
 
-  updateStatus(id: string, orderStatus: string) { return this.orderModel.findByIdAndUpdate(id, { orderStatus }, { new: true, runValidators: true }).orFail(); }
+  async updateStatus(id: string, status: OrderStatus) {
+    const updated = await this.orderModel
+      .findByIdAndUpdate(id, { status }, { new: true })
+      .exec();
+    if (!updated) throw new NotFoundException('Commande introuvable');
+    return updated;
+  }
 
-  bulkUpdateStatus(ids: string[], orderStatus: string) { return this.orderModel.updateMany({ _id: { $in: ids } }, { $set: { orderStatus } }); }
-
-  remove(id: string) { return this.orderModel.findByIdAndDelete(id).orFail(); }
-
-  bulkRemove(ids: string[]) { return this.orderModel.deleteMany({ _id: { $in: ids } }); }
-
-  updateDetails(id: string, payload: { shippingAddress?: Record<string, string>; notes?: string; paymentStatus?: string }) { return this.orderModel.findByIdAndUpdate(id, payload, { new: true, runValidators: true }).orFail(); }
+  async remove(id: string) {
+    const deleted = await this.orderModel.findByIdAndDelete(id).exec();
+    if (!deleted) throw new NotFoundException('Commande introuvable');
+    return { deleted: true, id };
+  }
 }

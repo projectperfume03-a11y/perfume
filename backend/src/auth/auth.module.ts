@@ -1,8 +1,27 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthController } from './auth.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { Admin, AdminSchema } from './schemas/admin.schema';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
-@Module({ imports: [JwtModule.register({ secret: process.env.JWT_SECRET || 'development-only-secret', signOptions: { expiresIn: '8h' } })], controllers: [AuthController], providers: [AuthService, JwtAuthGuard], exports: [JwtAuthGuard, JwtModule] })
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: Admin.name, schema: AdminSchema }]),
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService): JwtModuleOptions => ({
+        secret: config.get<string>('JWT_SECRET') || 'secret',
+        signOptions: {
+          expiresIn: (config.get<string>('JWT_EXPIRES_IN') || '7d') as any,
+        },
+      }),
+    }),
+  ],
+  controllers: [AuthController],
+  providers: [AuthService, JwtAuthGuard],
+  exports: [JwtAuthGuard, JwtModule],
+})
 export class AuthModule {}

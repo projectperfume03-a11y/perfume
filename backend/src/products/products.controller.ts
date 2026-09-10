@@ -1,30 +1,53 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  findAll(@Query() query: Record<string, string>) { return this.productsService.findAll(query); }
+  findAll(@Query('category') category?: string) {
+    return this.productsService.findAll(category);
+  }
 
-  @Get('slug/:slug')
-  findBySlug(@Param('slug') slug: string) { return this.productsService.findBySlug(slug); }
+  @Get('categories')
+  findCategories() {
+    return this.productsService.findCategories();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.productsService.findOne(id);
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Body() body: Record<string, unknown>) { return this.productsService.create(body); }
+  create(@Body() dto: CreateProductDto) {
+    return this.productsService.create(dto);
+  }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() body: Record<string, unknown>) { return this.productsService.update(id, body); }
-
-  @Patch(':id/archive')
-  @UseGuards(JwtAuthGuard)
-  archive(@Param('id') id: string) { return this.productsService.archive(id); }
+  update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
+    return this.productsService.update(id, dto);
+  }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) { return this.productsService.remove(id); }
+  remove(@Param('id') id: string) {
+    return this.productsService.remove(id);
+  }
 }

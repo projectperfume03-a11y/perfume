@@ -1,28 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { v2 as cloudinary, UploadApiResponse, UploadApiErrorResponse } from 'cloudinary';
+import { ConfigService } from '@nestjs/config';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class CloudinaryService {
-  constructor() {
-    cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-      secure: true,
-    });
-  }
+  constructor(private readonly config: ConfigService) {}
 
-  uploadBuffer(buffer: Buffer, folder = 'aster-parfums/products'): Promise<UploadApiResponse> {
-    return new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream({ folder, resource_type: 'image' }, (error: UploadApiErrorResponse | undefined, result: UploadApiResponse | undefined) => {
-        if (error || !result) reject(error || new Error('Cloudinary upload failed'));
-        else resolve(result);
-      });
-      stream.end(buffer);
-    });
-  }
+  getUploadSignature() {
+    const cloudName = this.config.get<string>('CLOUDINARY_CLOUD_NAME');
+    const apiKey = this.config.get<string>('CLOUDINARY_API_KEY');
+    const apiSecret = this.config.get<string>('CLOUDINARY_API_SECRET');
+    const uploadPreset = this.config.get<string>('CLOUDINARY_UPLOAD_PRESET') || 'travail';
+    const timestamp = Math.floor(Date.now() / 1000).toString();
 
-  async remove(publicId: string) {
-    return cloudinary.uploader.destroy(publicId);
+    const params: Record<string, string> = { timestamp, upload_preset: uploadPreset };
+    const toSign = Object.keys(params)
+      .sort()
+      .map((key) => `${key}=${params[key]}`)
+      .join('&');
+
+    const signature = crypto
+      .createHash('sha1')
+      .update(toSign + apiSecret)
+      .digest('hex');
+
+    return {
+      cloud_name: cloudName,
+      api_key: apiKey,
+      timestamp,
+      upload_preset: uploadPreset,
+      signature,
+    };
   }
 }

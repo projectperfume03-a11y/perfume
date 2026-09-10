@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: bois-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install && npm run build && test -f dist/main.js
+    startCommand: npm run start:prod
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        value: mongodb+srv://boisbois192_db_user:bbSBBmjTf3rjvm48@bd.7o9xuwz.mongodb.net/bois-olivier?appName=BD
+      - key: JWT_SECRET
+        value: bois_olivier_super_secret_2026_changez_moi
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        value: admin123
+      - key: CLOUDINARY_CLOUD_NAME
+        value: hp4f3odw
+      - key: CLOUDINARY_API_KEY
+        value: 986598942686622
+      - key: CLOUDINARY_API_SECRET
+        value: Df0_Ri7hzCd-KzSrb4Kasva4Tf8
+      - key: CLOUDINARY_UPLOAD_PRESET
+        value: ml_default

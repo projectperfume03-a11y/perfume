@@ -1,0 +1,149 @@
+/* ── Page détail produit ── */
+.page-detail { padding: 3.5rem 0 7rem; }
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 5rem;
+  align-items: start;
+}
+
+.d-gallery { position: sticky; top: 120px; }
+.d-main {
+  position: relative;
+  overflow: hidden;
+  background: var(--sand);
+  border: 1px solid var(--border);
+  aspect-ratio: 1 / 1;
+}
+.d-main::after {
+  content: '';
+  position: absolute; inset: 14px;
+  border: 1px solid rgba(253, 250, 244, 0.4);
+  pointer-events: none;
+}
+.d-main img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.22, 0.8, 0.28, 0.99);
+}
+.d-main:hover img { transform: scale(1.04); }
+
+.d-thumbs {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+.d-thumb {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--sand);
+  border: 1px solid var(--border);
+  padding: 0;
+  opacity: 0.62;
+  transition: all var(--transition-fast);
+}
+.d-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.d-thumb.active { opacity: 1; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-pale); }
+.d-thumb:not(.active):hover { opacity: 0.9; }
+.d-thumb-label {
+  position: absolute; bottom: 6px; right: 6px;
+  font-size: 0.52rem; letter-spacing: 0.18em; text-transform: uppercase;
+  background: rgba(23, 16, 10, 0.72);
+  color: var(--ivory);
+  padding: 2px 7px;
+}
+
+.d-info .eyebrow { margin-bottom: 1.1rem; }
+.d-title {
+  font-size: clamp(2.3rem, 3.8vw, 3.3rem);
+  line-height: 1.08;
+  margin-bottom: 1.15rem;
+}
+.d-rating {
+  display: flex; align-items: center; gap: 0.65rem;
+  color: var(--gold); margin-bottom: 1.4rem;
+}
+.d-rating span {
+  font-size: 0.78rem; letter-spacing: 0.12em;
+  color: var(--text-muted); text-transform: uppercase;
+}
+.d-price {
+  font-family: var(--font-serif);
+  font-size: 2.15rem; font-weight: 600;
+  color: var(--ink);
+  display: flex; align-items: baseline; gap: 0.9rem;
+  padding-bottom: 1.75rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.75rem;
+}
+.d-price small {
+  font-family: var(--font-sans);
+  font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--text-muted); font-weight: 400;
+}
+.d-desc {
+  color: var(--text-secondary);
+  font-size: 1.02rem; line-height: 1.85;
+  margin-bottom: 2.25rem;
+}
+
+.stock-chip {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1.9rem;
+}
+.stock-chip.ok { background: var(--success-soft, rgba(125,148,100,0.16)); color: #5c7047; border: 1px solid rgba(125, 148, 100, 0.35); }
+.stock-chip.out { background: rgba(192, 86, 74, 0.1); color: var(--danger); border: 1px solid rgba(192, 86, 74, 0.32); }
+
+.buy-row {
+  display: flex; gap: 1.1rem; flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+.qty-box {
+  display: inline-flex; align-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--ivory);
+}
+.qty-box button {
+  width: 46px; height: 50px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.15rem; color: var(--text-secondary);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+.qty-box button:hover { color: var(--ink); background: var(--linen); }
+.qty-box span {
+  width: 44px; text-align: center;
+  font-weight: 500; font-size: 1.02rem;
+}
+.buy-row > .btn { flex: 1 1 220px; }
+
+.d-perks {
+  list-style: none;
+  border-top: 1px solid var(--border);
+  padding-top: 2rem;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.3rem 2rem;
+}
+.d-perks li {
+  display: flex; align-items: center; gap: 0.95rem;
+  color: var(--text-secondary); font-size: 0.92rem;
+  line-height: 1.45;
+}
+.d-perks svg { color: var(--gold); flex-shrink: 0; }
+
+@media (max-width: 900px) {
+  .detail-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .d-gallery { position: static; }
+  .d-perks { grid-template-columns: 1fr; }
+}
+
+/* ── Produits liés ── */
+.related-section {
+  margin-top: 6.5rem;
+  padding-top: 5rem;
+  border-top: 1px solid var(--border);
+}

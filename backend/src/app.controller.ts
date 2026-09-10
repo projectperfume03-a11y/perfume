@@ -1,12 +1,16 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { ConfigService } from '@nestjs/config';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private config: ConfigService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('health')
+  health() {
+    return {
+      status: 'ok',
+      app: 'ROYA API',
+      cloudinary: this.config.get('CLOUDINARY_CLOUD_NAME'),
+    };
   }
 }

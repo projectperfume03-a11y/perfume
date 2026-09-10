@@ -1,21 +1,39 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { ConfigService } from '@nestjs/config';
+import { Admin } from './schemas/admin.schema';
 
 @Injectable()
-export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
-  async login(email: string, password: string) {
-    const cleanEmail = (email || '').trim().toLowerCase();
-    const envEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
-    const validEmail = cleanEmail === envEmail || cleanEmail === 'admin@roya.com' || cleanEmail === 'admin@asterparfums.com';
-    
-    let validPassword = password === 'admin1234';
-    if (!validPassword && process.env.ADMIN_PASSWORD_HASH) {
-      validPassword = await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH);
+export class AuthService implements OnModuleInit {
+  constructor(
+    @InjectModel(Admin.name) private readonly adminModel: Model<Admin>,
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
+  ) {}
+
+  async onModuleInit() {
+    const username = this.config.get<string>('ADMIN_USERNAME') || 'admin';
+    const password = this.config.get<string>('ADMIN_PASSWORD') || 'admin123';
+    const exists = await this.adminModel.findOne({ username });
+    if (!exists) {
+      const hash = await bcrypt.hash(password, 10);
+      await this.adminModel.create({ username, password: hash });
+      console.log(`Administrateur "${username}" créé (définir mdp via .env).`);
     }
-    
-    if (!validEmail || !validPassword) throw new UnauthorizedException('Identifiants invalides');
-    return { accessToken: await this.jwtService.signAsync({ sub: cleanEmail, role: 'admin' }), user: { email: cleanEmail, role: 'admin' } };
+  }
+
+  async login(username: string, password: string) {
+    const admin = await this.adminModel.findOne({ username });
+    if (!admin || !(await bcrypt.compare(password, admin.password))) {
+      throw new UnauthorizedException('Identifiants incorrects');
+    }
+    const token = await this.jwt.signAsync({
+      sub: admin._id,
+      username: admin.username,
+    });
+    return { access_token: token, username: admin.username };
   }
 }
