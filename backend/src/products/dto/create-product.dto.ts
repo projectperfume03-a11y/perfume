@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsIn,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -24,6 +25,15 @@ export class CreateProductDto {
   @IsOptional()
   category?: string;
 
+  @IsString()
+  @IsOptional()
+  brand?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsIn(['femme', 'homme', 'mixte'])
+  gender?: string;
+
   @IsBoolean()
   @IsOptional()
   inStock?: boolean;
@@ -35,3 +45,4 @@ export class CreateProductDto {
   @IsOptional()
   images?: string[];
 }
+

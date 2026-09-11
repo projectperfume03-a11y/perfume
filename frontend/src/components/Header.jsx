@@ -36,17 +36,23 @@ export default function Header() {
   return (
     <>
       <div className="announce-bar">
-        Livraison offerte dès <em>200 DT</em> · Parfums de marques sélectionnés pour vous
+        Livraison Prestige Offerte dès <em>200 DT</em> · Curation Haute Parfumerie Pour Elle & Pour Lui
       </div>
 
       <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
         <div className="container header-inner">
           <Link to="/" aria-label="ROYA — Accueil">
-            <img src="/roya-wordmark-gold.png" alt="ROYA" className="logo-img" />
+            <img src="/roya-wordmark-gold.png" alt="ROYA Haute Parfumerie" className="logo-img" />
           </Link>
 
           <nav className="main-nav desktop-only" aria-label="Navigation principale">
             <NavLink to="/" end className={navClass}>Accueil</NavLink>
+            <NavLink to="/produits?genre=femme" className="nav-link nav-link-femme">
+              Pour Elle <span className="nav-pill-mini">60%</span>
+            </NavLink>
+            <NavLink to="/produits?genre=homme" className="nav-link nav-link-homme">
+              Pour Lui <span className="nav-pill-mini">40%</span>
+            </NavLink>
             <NavLink to="/produits" className={navClass}>Collection</NavLink>
             <NavLink to="/contact" className={navClass}>Contact</NavLink>
           </nav>
@@ -82,27 +88,56 @@ export default function Header() {
         onClick={(e) => { if (e.target.closest('a')) setMenuOpen(false); }}
       >
         <div className="mobile-panel-inner">
-          <span className="mobile-panel-label">Navigation</span>
+          <div className="mp-header-brand">
+            <img src="/roya-wordmark-gold.png" alt="ROYA" className="mp-logo" />
+            <span className="mobile-panel-label">Haute Parfumerie</span>
+          </div>
 
           <nav className="mobile-panel-nav" aria-label="Navigation mobile">
-            <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Accueil</Link>
-            <Link to="/produits" className={location.pathname.startsWith('/produits') ? 'active' : ''}>Collection</Link>
-            <Link to="/contact" className={location.pathname === '/contact' ? 'active' : ''}>Contact</Link>
+            <Link to="/" className={location.pathname === '/' && !location.search ? 'active' : ''}>
+              <span>Accueil</span>
+            </Link>
+            <Link
+              to="/produits?genre=femme"
+              className={`mp-link-femme ${location.search.includes('genre=femme') ? 'active' : ''}`}
+            >
+              <span>Pour Elle</span>
+              <span className="mp-badge-tag rose">60% Curation</span>
+            </Link>
+            <Link
+              to="/produits?genre=homme"
+              className={`mp-link-homme ${location.search.includes('genre=homme') ? 'active' : ''}`}
+            >
+              <span>Pour Lui</span>
+              <span className="mp-badge-tag gold">40% Curation</span>
+            </Link>
+            <Link
+              to="/produits"
+              className={location.pathname === '/produits' && !location.search ? 'active' : ''}
+            >
+              <span>Toute la Collection</span>
+            </Link>
+            <Link
+              to="/contact"
+              className={location.pathname === '/contact' ? 'active' : ''}
+            >
+              <span>Conseil & Atelier</span>
+            </Link>
           </nav>
 
           <div className="mobile-panel-footer">
             <p className="mp-tagline">
-              Élégance et parfum,
+              L'excellence du parfum de marque,
               <br />
-              sélectionnés parmi les maisons les plus désirées.
+              sublimé pour chaque personnalité.
             </p>
             <div className="mp-socials">
               <a href="#">Instagram</a>
+              <a href="#">WhatsApp</a>
               <a href="#">Facebook</a>
-              <a href="#">Pinterest</a>
             </div>
             <span className="mp-copy">
-              © {new Date().getFullYear()} ROYA — Maison de parfums de luxe
+              © {new Date().getFullYear()} ROYA — Maison de Haute Parfumerie
             </span>
           </div>
         </div>

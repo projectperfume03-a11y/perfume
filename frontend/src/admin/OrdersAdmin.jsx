@@ -2,18 +2,37 @@ import { useCallback, useEffect, useState, Fragment } from 'react';
 import { api } from '../api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../components/Toast.jsx';
-import { ChevronDown, Trash2, Eye } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash2, MapPin, Phone, MessageSquare, Package } from 'lucide-react';
 import ConfirmModal from '../components/ConfirmModal.jsx';
 
 const STATUSES = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 
-const STATUS_LABELS = {
-  pending: 'En attente',
-  confirmed: 'Confirmée',
-  shipped: 'Expédiée',
-  delivered: 'Livrée',
-  cancelled: 'Annulée',
+const STATUS_META = {
+  pending:   { label: 'En attente',  color: '#d4a050', bg: 'rgba(212,160,80,0.1)',   border: 'rgba(212,160,80,0.22)' },
+  confirmed: { label: 'Confirmée',   color: '#8fc97c', bg: 'rgba(100,160,85,0.1)',   border: 'rgba(100,160,85,0.22)' },
+  shipped:   { label: 'Expédiée',    color: '#80b4d4', bg: 'rgba(80,140,200,0.1)',   border: 'rgba(80,140,200,0.22)' },
+  delivered: { label: 'Livrée',      color: '#a9c48d', bg: 'rgba(120,180,100,0.1)',  border: 'rgba(120,180,100,0.22)' },
+  cancelled: { label: 'Annulée',     color: '#e0968d', bg: 'rgba(192,86,74,0.1)',    border: 'rgba(192,86,74,0.22)' },
 };
+
+function StatusBadgeInline({ status }) {
+  const m = STATUS_META[status] || STATUS_META.pending;
+  return (
+    <span style={{
+      padding: '0.28rem 0.6rem',
+      borderRadius: '4px',
+      fontSize: '0.6rem',
+      fontWeight: 500,
+      letterSpacing: '0.05em',
+      color: m.color,
+      background: m.bg,
+      border: `1px solid ${m.border}`,
+      whiteSpace: 'nowrap',
+    }}>
+      {m.label}
+    </span>
+  );
+}
 
 export default function OrdersAdmin({ refreshStats }) {
   const { token } = useAuth();
@@ -45,7 +64,7 @@ export default function OrdersAdmin({ refreshStats }) {
     try {
       const updated = await api.patch(`/orders/${order._id}/status`, { status }, token);
       setOrders((prev) => prev.map((o) => (o._id === updated._id ? updated : o)));
-      push(`Commande marquée ${STATUS_LABELS[status].toLowerCase()}`);
+      push(`Commande marquée ${STATUS_META[status].label.toLowerCase()}`);
       if (refreshStats) refreshStats();
       setConfirm(null);
     } catch (e) {
@@ -72,7 +91,7 @@ export default function OrdersAdmin({ refreshStats }) {
     setConfirm({
       isOpen: true,
       title: 'Mettre à jour le statut',
-      message: `La commande #${order._id.slice(-6)} passera au statut « ${STATUS_LABELS[newStatus]} ».`,
+      message: `La commande #${order._id.slice(-6)} passera au statut « ${STATUS_META[newStatus]?.label} ».`,
       confirmText: 'Mettre à jour',
       onConfirm: () => executeChangeStatus(order, newStatus),
       onCancel: () => setConfirm(null),
@@ -95,37 +114,67 @@ export default function OrdersAdmin({ refreshStats }) {
     .filter((o) => o.status !== 'cancelled')
     .reduce((s, o) => s + o.total, 0);
 
+  const counts = STATUSES.reduce((acc, s) => {
+    acc[s] = orders.filter((o) => o.status === s).length;
+    return acc;
+  }, {});
+
   return (
     <div className="vip-panel">
-      <div className="vip-panel-head">
+      {/* ── En-tête + filtres ── */}
+      <div className="vip-panel-head" style={{ flexDirection: 'column', gap: '1rem', alignItems: 'stretch' }}>
+        {/* Ligne 1 : titre + CA */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <h2 className="vip-panel-title">Commandes</h2>
+          <span className="chip" style={{ fontSize: '0.72rem' }}>
+            {orders.length} commande{orders.length !== 1 ? 's' : ''}
+            {' · '}CA&nbsp;
+            <strong style={{ color: 'var(--adm-gold)', fontWeight: 600 }}>
+              {revenue.toLocaleString('fr-FR', { minimumFractionDigits: 3 })} DT
+            </strong>
+          </span>
+        </div>
+
+        {/* Ligne 2 : pills de filtre */}
         <div className="status-pills" role="group" aria-label="Filtrer par statut">
-          <button className={!filter ? 'active' : ''} onClick={() => setFilter('')}>Toutes</button>
+          <button
+            className={!filter ? 'active' : ''}
+            onClick={() => setFilter('')}
+          >
+            Toutes
+            <span className="vip-nav-count" style={{ marginLeft: '0.4rem' }}>{orders.length}</span>
+          </button>
           {STATUSES.map((s) => (
-            <button key={s} className={filter === s ? 'active' : ''} onClick={() => setFilter(s)}>
-              {STATUS_LABELS[s]}
+            <button
+              key={s}
+              className={filter === s ? 'active' : ''}
+              onClick={() => setFilter(s === filter ? '' : s)}
+            >
+              {STATUS_META[s].label}
+              {counts[s] > 0 && (
+                <span className="vip-nav-count" style={{ marginLeft: '0.4rem' }}>{counts[s]}</span>
+              )}
             </button>
           ))}
         </div>
-
-        <span className="chip">
-          {orders.length} commande{orders.length > 1 ? 's' : ''}
-          {' · '}
-          CA&nbsp;
-          <strong style={{ color: 'var(--vip-gold)', fontWeight: 600 }}>
-            {revenue.toFixed(3)} DT
-          </strong>
-        </span>
       </div>
 
+      {/* ── Contenu ── */}
       {loading ? (
         <div className="vip-panel-body" style={{ display: 'grid', gap: '0.8rem' }}>
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="skeleton" style={{ height: 58 }} />
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="skeleton" style={{ height: 62, borderRadius: 6 }} />
           ))}
         </div>
       ) : orders.length === 0 ? (
-        <div className="vip-panel-body" style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--vip-text-3)' }}>
-          Aucune commande pour ce filtre.
+        <div className="vip-panel-body" style={{ textAlign: 'center', padding: '5rem 2rem', color: 'var(--adm-text-3)' }}>
+          <Package size={36} strokeWidth={1.2} style={{ margin: '0 auto 1rem', opacity: 0.4 }} />
+          <p style={{ fontSize: '0.9rem' }}>Aucune commande pour ce filtre.</p>
+          {filter && (
+            <button className="btn btn-outline btn-sm" style={{ marginTop: '1rem' }} onClick={() => setFilter('')}>
+              Voir toutes les commandes
+            </button>
+          )}
         </div>
       ) : (
         <div className="vip-table-wrap">
@@ -142,11 +191,12 @@ export default function OrdersAdmin({ refreshStats }) {
             <tbody>
               {orders.map((o) => (
                 <Fragment key={o._id}>
+                  {/* Ligne principale */}
                   <tr>
                     <td>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
                         <span className="cell-name">#{o._id.slice(-6)}</span>
-                        <span style={{ fontSize: '0.74rem', color: 'var(--vip-text-3)' }}>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--adm-text-3)' }}>
                           {new Date(o.createdAt).toLocaleDateString('fr-FR', {
                             day: '2-digit', month: 'short', year: 'numeric',
                           })}
@@ -156,100 +206,148 @@ export default function OrdersAdmin({ refreshStats }) {
                     <td>
                       <div className="cell-customer">
                         <span className="avatar-init">
-                          {(o.customerName || '?').trim().split(/\s+/).slice(0, 2).map((w) => w.charAt(0).toUpperCase()).join('')}
+                          {(o.customerName || '?').trim().split(/\s+/).slice(0, 2)
+                            .map((w) => w.charAt(0).toUpperCase()).join('')}
                         </span>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-                          <span style={{ fontWeight: 500 }}>{o.customerName}</span>
-                          <span style={{ fontSize: '0.76rem', color: 'var(--vip-text-3)' }}>{o.customerEmail}</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
+                          <span style={{ fontWeight: 500, fontSize: '0.82rem', color: 'var(--adm-text)' }}>
+                            {o.customerName}
+                          </span>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--adm-text-3)' }}>
+                            {o.customerEmail}
+                          </span>
                         </div>
                       </div>
                     </td>
                     <td>
                       <select
-                        className={`status-select`}
+                        className="status-select"
                         value={o.status}
                         onChange={(e) => confirmChangeStatus(o, e.target.value)}
                         aria-label={`Statut de la commande ${o._id.slice(-6)}`}
+                        style={{ color: STATUS_META[o.status]?.color || 'inherit' }}
                       >
                         {STATUSES.map((s) => (
-                          <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                          <option key={s} value={s}>{STATUS_META[s].label}</option>
                         ))}
                       </select>
                     </td>
-                    <td className="cell-price">{o.total.toFixed(3).replace('.', ',')} DT</td>
+                    <td className="cell-price">
+                      {(o.total || 0).toLocaleString('fr-FR', { minimumFractionDigits: 3 })} DT
+                    </td>
                     <td>
                       <div className="cell-actions">
                         <button
                           className="btn btn-outline btn-sm"
                           onClick={() => setExpanded(expanded === o._id ? null : o._id)}
+                          aria-label={expanded === o._id ? 'Fermer détails' : 'Voir détails'}
                         >
-                          {expanded === o._id ? <ChevronDown size={13} /> : <Eye size={13} />}
+                          {expanded === o._id
+                            ? <ChevronUp size={13} strokeWidth={2} />
+                            : <ChevronDown size={13} strokeWidth={2} />}
                           {expanded === o._id ? 'Fermer' : 'Détails'}
                         </button>
-                        <button className="btn btn-vip-danger btn-sm" onClick={() => confirmRemove(o)} aria-label="Supprimer">
-                          <Trash2 size={13} />
+                        <button
+                          className="btn btn-vip-danger btn-sm"
+                          onClick={() => confirmRemove(o)}
+                          aria-label="Supprimer cette commande"
+                        >
+                          <Trash2 size={13} strokeWidth={1.6} />
                         </button>
                       </div>
                     </td>
                   </tr>
 
+                  {/* Ligne détails expansible */}
                   {expanded === o._id && (
-                    <tr style={{ background: 'rgba(201, 171, 119, 0.03)' }}>
-                      <td colSpan={5}>
-                        <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap', padding: '0.5rem 0' }}>
-
-                          <div style={{ flex: 1, minWidth: 250 }}>
+                    <tr style={{ background: 'rgba(212, 175, 117, 0.025)' }}>
+                      <td colSpan={5} style={{ padding: '0' }}>
+                        <div style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'minmax(220px, 0.7fr) 1fr',
+                          gap: '2rem',
+                          padding: '1.35rem 1.5rem',
+                          borderTop: '1px solid rgba(212,175,117,0.1)',
+                        }}>
+                          {/* Informations de livraison */}
+                          <div>
                             <h4 style={{
-                              fontFamily: 'var(--font-sans)',
-                              fontSize: '0.64rem', letterSpacing: '0.24em',
-                              textTransform: 'uppercase', marginBottom: '1.1rem',
-                              color: 'var(--vip-text-3)',
+                              fontSize: '0.62rem',
+                              letterSpacing: '0.22em',
+                              textTransform: 'uppercase',
+                              marginBottom: '1rem',
+                              color: 'var(--adm-text-3)',
                             }}>
-                              Livraison
+                              Informations livraison
                             </h4>
-                            <p style={{ margin: '0 0 0.55rem', fontSize: '0.88rem' }}>
-                              <strong style={{ color: 'var(--vip-text-3)', fontWeight: 500 }}>Téléphone — </strong>
-                              {o.customerPhone}
-                            </p>
-                            <p style={{ margin: '0 0 0.55rem', fontSize: '0.88rem', lineHeight: 1.6 }}>
-                              <strong style={{ color: 'var(--vip-text-3)', fontWeight: 500 }}>Adresse — </strong>
-                              {o.shippingAddress}
-                            </p>
-                            {o.notes && (
-                              <p style={{
-                                margin: 0, fontSize: '0.88rem', lineHeight: 1.6,
-                                fontStyle: 'italic', color: '#e0b877',
-                              }}>
-                                « {o.notes} »
-                              </p>
-                            )}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                              {o.customerPhone && (
+                                <div style={{ display: 'flex', gap: '0.55rem', alignItems: 'flex-start' }}>
+                                  <Phone size={13} strokeWidth={1.6} style={{ color: 'var(--adm-text-3)', marginTop: '0.1rem', flexShrink: 0 }} />
+                                  <span style={{ fontSize: '0.84rem', color: 'var(--adm-text-2)' }}>{o.customerPhone}</span>
+                                </div>
+                              )}
+                              {o.shippingAddress && (
+                                <div style={{ display: 'flex', gap: '0.55rem', alignItems: 'flex-start' }}>
+                                  <MapPin size={13} strokeWidth={1.6} style={{ color: 'var(--adm-text-3)', marginTop: '0.1rem', flexShrink: 0 }} />
+                                  <span style={{ fontSize: '0.84rem', color: 'var(--adm-text-2)', lineHeight: 1.55 }}>{o.shippingAddress}</span>
+                                </div>
+                              )}
+                              {o.notes && (
+                                <div style={{ display: 'flex', gap: '0.55rem', alignItems: 'flex-start' }}>
+                                  <MessageSquare size={13} strokeWidth={1.6} style={{ color: 'var(--adm-text-3)', marginTop: '0.1rem', flexShrink: 0 }} />
+                                  <span style={{ fontSize: '0.84rem', color: '#d4a050', fontStyle: 'italic', lineHeight: 1.55 }}>
+                                    « {o.notes} »
+                                  </span>
+                                </div>
+                              )}
+                              <div style={{ marginTop: '0.5rem' }}>
+                                <StatusBadgeInline status={o.status} />
+                              </div>
+                            </div>
                           </div>
 
-                          <div style={{ flex: 2, minWidth: 300 }}>
+                          {/* Articles commandés */}
+                          <div>
                             <h4 style={{
-                              fontFamily: 'var(--font-sans)',
-                              fontSize: '0.64rem', letterSpacing: '0.24em',
-                              textTransform: 'uppercase', marginBottom: '1.1rem',
-                              color: 'var(--vip-text-3)',
+                              fontSize: '0.62rem',
+                              letterSpacing: '0.22em',
+                              textTransform: 'uppercase',
+                              marginBottom: '1rem',
+                              color: 'var(--adm-text-3)',
                             }}>
                               Articles ({o.items.reduce((s, i) => s + i.quantity, 0)})
                             </h4>
                             <div className="list-tight">
                               {o.items.map((it) => (
                                 <div className="row-item" key={it.productId + it.name}>
-                                  <img src={it.image} alt="" className="row-thumb" />
+                                  {it.image && <img src={it.image} alt="" className="row-thumb" />}
                                   <div className="row-main">
                                     <span className="row-title">{it.name}</span>
-                                    <span className="row-sub">Quantité : {it.quantity}</span>
+                                    <span className="row-sub">
+                                      Qté : {it.quantity} · {(it.price).toLocaleString('fr-FR', { minimumFractionDigits: 3 })} DT/u
+                                    </span>
                                   </div>
                                   <span className="row-end">
-                                    {(it.price * it.quantity).toFixed(3).replace('.', ',')} DT
+                                    {(it.price * it.quantity).toLocaleString('fr-FR', { minimumFractionDigits: 3 })} DT
                                   </span>
                                 </div>
                               ))}
                             </div>
+                            {/* Sous-total */}
+                            <div style={{
+                              display: 'flex',
+                              justifyContent: 'flex-end',
+                              paddingTop: '0.85rem',
+                              borderTop: '1px solid rgba(212,175,117,0.12)',
+                              marginTop: '0.5rem',
+                            }}>
+                              <span style={{ fontSize: '0.75rem', color: 'var(--adm-text-3)', marginRight: '0.75rem' }}>Total</span>
+                              <strong style={{ color: 'var(--adm-gold)', fontFamily: 'var(--font-serif)', fontSize: '1.05rem' }}>
+                                {(o.total || 0).toLocaleString('fr-FR', { minimumFractionDigits: 3 })} DT
+                              </strong>
+                            </div>
                           </div>
-
                         </div>
                       </td>
                     </tr>

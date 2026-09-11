@@ -16,29 +16,29 @@ export default function Footer() {
           </div>
 
           <div className="footer-col">
-            <h4>La maison</h4>
+            <h4>La Curation</h4>
             <ul>
-              <li><Link to="/produits">Toute la collection</Link></li>
-              <li><Link to="/produits?categorie=Floral">Parfums floraux</Link></li>
-              <li><Link to="/produits?categorie=Oriental">Oriental</Link></li>
-              <li><Link to="/produits?categorie=Boise">Boisé</Link></li>
+              <li><Link to="/produits?genre=femme">Pour Elle (60%)</Link></li>
+              <li><Link to="/produits?genre=homme">Pour Lui (40%)</Link></li>
+              <li><Link to="/produits?genre=mixte">Niche & Extraits</Link></li>
+              <li><Link to="/produits">Toute la Collection</Link></li>
             </ul>
           </div>
 
           <div className="footer-col">
-            <h4>Service</h4>
+            <h4>Conciergerie</h4>
             <ul>
-              <li><Link to="/contact">Nous contacter</Link></li>
-              <li><a href="#">Livraison premium</a></li>
-              <li><a href="#">Conseils de parfum</a></li>
-              <li><a href="#">Échantillons</a></li>
+              <li><Link to="/contact">Nous Contacter</Link></li>
+              <li><a href="https://wa.me/?text=Bonjour%20Maison%20ROYA" target="_blank" rel="noopener noreferrer">Conseiller WhatsApp</a></li>
+              <li><a href="#">Livraison Prestige 48h</a></li>
+              <li><a href="#">Paiement à la Livraison</a></li>
             </ul>
           </div>
 
           <div className="footer-col">
-            <h4>Newsletter</h4>
+            <h4>Cercle Privilège</h4>
             <p style={{ fontSize: '0.88rem', marginBottom: '1.4rem', fontWeight: 300 }}>
-              Recevez nos nouveautés et les offres exclusives de la maison ROYA.
+              Recevez les invitations privées et les éditions rares de la maison ROYA.
             </p>
             <div className="newsletter-line">
               <input type="email" placeholder="Votre adresse e-mail" aria-label="Adresse e-mail" />

@@ -1,21 +1,36 @@
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
-import { Plus, Star } from 'lucide-react';
+import { useToast } from './Toast.jsx';
+import { Plus, Star, Sparkles } from 'lucide-react';
 
 export default function ProductCard({ product }) {
   const { addItem } = useCart();
+  const { push } = useToast();
   const outOfStock = product.inStock === false;
-  const imageSrc = product.image || '/roya-hero-bottle.jpg';
+  const imageSrc = product.image || '/roya-cat-niche.jpg';
 
-  const getBadge = (name) => {
-    const n = name.toLowerCase();
-    if (n.includes('amber') || n.includes('oriental')) return { text: 'Best-seller', cls: 'badge-dark' };
-    if (n.includes('rose') || n.includes('floral')) return { text: 'Signature', cls: 'badge-dark' };
-    if (n.includes('noir') || n.includes('wood')) return { text: 'Nouveauté', cls: 'badge-gold' };
-    return { text: 'Exclusivité', cls: 'badge-gold' };
+  const getBadge = () => {
+    if (product.badge) return product.badge;
+    const n = (product.name || '').toLowerCase();
+    const g = product.gender || '';
+    if (g === 'femme' || n.includes('rose') || n.includes('mademoiselle') || n.includes('delina')) {
+      return { text: '60% Pour Elle', cls: 'badge-rose' };
+    }
+    if (g === 'homme' || n.includes('sauvage') || n.includes('oud') || n.includes('bleu')) {
+      return { text: '40% Pour Lui', cls: 'badge-dark' };
+    }
+    return { text: 'Haute Signature', cls: 'badge-gold' };
   };
-  const badge = getBadge(product.name);
+
+  const badge = getBadge();
   const rating = product.rating || 5;
+
+  const handleQuickAdd = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem(product);
+    push(`${product.name} ajouté au panier`);
+  };
 
   return (
     <article className="product-card">
@@ -31,37 +46,53 @@ export default function ProductCard({ product }) {
         {!outOfStock && (
           <button
             className="quick-add"
-            onClick={(e) => {
-              e.preventDefault();
-              addItem(product);
-            }}
+            onClick={handleQuickAdd}
             aria-label={`Ajouter ${product.name} au panier`}
           >
-            <Plus size={14} strokeWidth={2} />
-            Ajouter au panier
+            <Plus size={15} strokeWidth={2.2} />
+            <span>Ajouter</span>
           </button>
         )}
 
         {outOfStock && (
           <div className="pc-soldout-veil">
-            <span className="pc-soldout-tag">Épuisé</span>
+            <span className="pc-soldout-tag">Édition épuisée</span>
           </div>
         )}
       </div>
 
       <div className="pc-info">
-        <span className="pc-cat">{product.category || 'Parfum de luxe'}</span>
+        <div className="pc-top-meta">
+          <span className="pc-cat">{product.brand || product.category || 'Maison de Luxe'}</span>
+          <span className="pc-rating" aria-label={`Note de ${rating} sur 5`}>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star key={i} size={10} fill="currentColor" color="var(--gold)" strokeWidth={1} />
+            ))}
+          </span>
+        </div>
+
         <h3 className="pc-name">
           <Link to={`/produit/${product._id}`}>{product.name}</Link>
         </h3>
-        <p className="pc-price">
-          <strong>{product.price.toFixed(3).replace('.', ',')} DT</strong>
-        </p>
-        <span className="pc-rating" aria-label={`Note de ${rating} sur 5`}>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star key={i} size={11} fill={i < rating ? 'currentColor' : 'none'} strokeWidth={1.2} />
-          ))}
-        </span>
+
+        {product.family && (
+          <span className="pc-family">{product.family}</span>
+        )}
+
+        <div className="pc-bottom-row">
+          <p className="pc-price">
+            <strong>{product.price.toFixed(3).replace('.', ',')} DT</strong>
+          </p>
+
+          <button
+            className="mobile-quick-btn"
+            onClick={handleQuickAdd}
+            aria-label={`Ajouter ${product.name}`}
+            title="Ajouter au panier"
+          >
+            <Plus size={16} strokeWidth={2.4} />
+          </button>
+        </div>
       </div>
     </article>
   );

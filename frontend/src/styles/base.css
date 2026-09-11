@@ -1,66 +1,95 @@
 /* ════════════════════════════════════════
-   ROYA — Parfums de luxe
+   ROYA — Haute Parfumerie & Parfums de Prestige
+   Palette : 60% Féminine (Rose-Gold Nude, Nectar, Soie)
+             40% Masculine (Obsidienne, Ambre Fumé, Cuir)
    ════════════════════════════════════════ */
 
 :root {
-  --roya-950: #070b0f;
-  --roya-900: #0c1117;
-  --roya-850: #121a22;
-  --roya-800: #1b242c;
-  --roya-700: #2a3138;
-  --roya-600: #3b4650;
+  /* ── 40% Masculin & Structure — Noir Profond & Ambre ── */
+  --noir-950: #0f0d10;
+  --noir-900: #161217;
+  --noir-850: #1d181f;
+  --noir-800: #27212a;
+  --noir-700: #39323c;
+  --noir-600: #4e4452;
 
-  --wood-950: var(--roya-950);
-  --wood-900: var(--roya-900);
-  --wood-850: var(--roya-850);
-  --wood-800: var(--roya-800);
-  --wood-700: var(--roya-700);
-  --wood-600: var(--roya-600);
+  --smoked-amber: #4a3324;
+  --amber-dark: #322216;
 
-  --cream: #f7f1ea;
-  --ivory: #fffaf6;
-  --sand: #e9dcc8;
-  --linen: #efe5d8;
+  /* Rétrocompatibilité */
+  --roya-950: var(--noir-950);
+  --roya-900: var(--noir-900);
+  --roya-850: var(--noir-850);
+  --roya-800: var(--noir-800);
+  --roya-700: var(--noir-700);
+  --roya-600: var(--noir-600);
+  --wood-950: var(--noir-950);
+  --wood-900: var(--noir-900);
+  --wood-850: var(--noir-850);
+  --wood-800: var(--noir-800);
+  --wood-700: var(--noir-700);
+  --wood-600: var(--noir-600);
 
-  --gold: #c7a96f;
-  --gold-soft: #dec08a;
-  --gold-pale: rgba(199, 169, 111, 0.12);
-  --amber: #8b5a2b;
+  /* ── 60% Féminin & Sensualité — Nude Cachemire, Rose Gold & Nectar ── */
+  --rose-gold: #c98a72;
+  --rose-gold-light: #dba28c;
+  --rose-nude: #e8cebe;
+  --rose-pale: rgba(201, 138, 114, 0.12);
+  --blush-silk: #fbf5ef;
+  --blush-powder: #f4eae0;
+  --cream: #faf5ee;
+  --ivory: #ffffff;
+  --sand: #ede2d3;
+  --linen: #f4ecdf;
 
-  --ink: #100f12;
-  --text-primary: #201d1d;
-  --text-secondary: #665d52;
-  --text-muted: #9a8f84;
+  /* ── Or & Éclat Couture ── */
+  --gold: #c59f5b;
+  --gold-soft: #dfc187;
+  --gold-pale: rgba(197, 159, 91, 0.14);
+  --gold-shimmer: linear-gradient(135deg, #d8b06b 0%, #ad8641 100%);
+  --rose-shimmer: linear-gradient(135deg, #d6947e 0%, #b87158 100%);
+  --amber: #8c5b2c;
 
-  --border: rgba(16, 15, 18, 0.12);
-  --border-strong: rgba(16, 15, 18, 0.24);
-  --shadow-xs: 0 1px 2px rgba(15, 15, 15, 0.06);
-  --shadow-sm: 0 6px 18px rgba(15, 15, 15, 0.08);
-  --shadow-md: 0 14px 38px rgba(15, 15, 15, 0.15);
-  --shadow-lg: 0 30px 60px -12px rgba(12, 17, 23, 0.35);
+  /* ── Textes & Contrastes ── */
+  --ink: #141115;
+  --text-primary: #231e22;
+  --text-secondary: #655861;
+  --text-muted: #9c8e96;
 
-  --font-serif: 'Cormorant Garamond', 'Times New Roman', serif;
-  --font-sans: 'Jost', 'Segoe UI', sans-serif;
+  --border: rgba(35, 30, 34, 0.11);
+  --border-strong: rgba(35, 30, 34, 0.22);
+  --border-rose: rgba(201, 138, 114, 0.25);
+  --border-gold: rgba(197, 159, 91, 0.28);
+
+  --shadow-xs: 0 2px 4px rgba(20, 17, 21, 0.04);
+  --shadow-sm: 0 8px 24px rgba(20, 17, 21, 0.06);
+  --shadow-md: 0 16px 40px rgba(20, 17, 21, 0.1);
+  --shadow-lg: 0 32px 68px -12px rgba(15, 13, 16, 0.28);
+  --shadow-rose: 0 16px 36px -8px rgba(201, 138, 114, 0.22);
+
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   --container: 1240px;
-  --radius-sm: 3px;
-  --radius-md: 6px;
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
 
-  --transition-fast: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-smooth: 0.45s cubic-bezier(0.22, 0.8, 0.28, 0.99);
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.4s cubic-bezier(0.22, 0.8, 0.28, 0.99);
 
-  --danger: #c0564a;
-  --success: #7d9464;
+  --danger: #b8473c;
+  --success: #608852;
 
-  --vip-bg: #0d1116;
-  --vip-panel: #141b22;
-  --vip-panel-2: #1d252c;
-  --vip-border: rgba(199, 169, 111, 0.18);
-  --vip-border-soft: rgba(199, 169, 111, 0.09);
-  --vip-text: #f2e9dc;
-  --vip-text-2: #d8c5a1;
-  --vip-text-3: #8f7a5f;
-  --vip-gold: #d7ba7d;
+  --vip-bg: #141015;
+  --vip-panel: #1b161c;
+  --vip-panel-2: #231c25;
+  --vip-border: rgba(197, 159, 91, 0.22);
+  --vip-border-soft: rgba(197, 159, 91, 0.1);
+  --vip-text: #f9f3ea;
+  --vip-text-2: #e2cca6;
+  --vip-text-3: #9e8a6f;
+  --vip-gold: #dfc187;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -71,12 +100,20 @@ body {
   font-family: var(--font-sans);
   color: var(--text-primary);
   background:
-    radial-gradient(circle at top, rgba(199, 169, 111, 0.18), transparent 24%),
-    linear-gradient(180deg, #f8f3ed 0%, #f4efe8 100%);
+    radial-gradient(circle at 18% 0%, rgba(201, 138, 114, 0.12), transparent 32%),
+    radial-gradient(circle at 82% 14%, rgba(197, 159, 91, 0.1), transparent 28%),
+    linear-gradient(180deg, #fdfbf8 0%, #f7f1e9 50%, #f4eae0 100%);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  padding-bottom: 74px; /* Espace pour la bottom navigation mobile */
+}
+
+@media (min-width: 769px) {
+  body {
+    padding-bottom: 0;
+  }
 }
 
 img { max-width: 100%; display: block; }
@@ -88,11 +125,12 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
   line-height: 1.15;
   color: var(--ink);
+  letter-spacing: -0.01em;
 }
 
-::selection { background: var(--gold); color: var(--ivory); }
+::selection { background: var(--rose-gold); color: #ffffff; }
 
-.container { width: 100%; max-width: var(--container); margin: 0 auto; padding: 0 2rem; }
+.container { width: 100%; max-width: var(--container); margin: 0 auto; padding: 0 1.5rem; }
 .site-main { min-height: 80vh; }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -151,22 +189,40 @@ h1, h2, h3, h4, h5, h6 {
 .btn svg { flex-shrink: 0; }
 
 .btn-primary {
-  background: var(--wood-850); color: var(--ivory);
-  border: 1px solid var(--wood-850);
+  background: var(--noir-900);
+  color: #fffdf8;
+  border: 1px solid rgba(197, 159, 91, 0.35);
+  box-shadow: 0 4px 16px rgba(18, 16, 19, 0.2);
 }
 .btn-primary:hover:not(:disabled) {
-  background: var(--wood-950);
+  background: var(--noir-950);
+  border-color: var(--gold);
+  color: var(--gold-soft);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
 
 .btn-gold {
-  background: linear-gradient(135deg, #bd9760, #a17c47);
-  color: #fffdf8;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--gold-shimmer);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 18px rgba(197, 159, 91, 0.3);
 }
 .btn-gold:hover:not(:disabled) {
   filter: brightness(1.08);
+  box-shadow: 0 6px 22px rgba(197, 159, 91, 0.42);
+  transform: translateY(-1px);
+}
+
+.btn-rose {
+  background: var(--rose-shimmer);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 4px 18px rgba(201, 138, 114, 0.32);
+}
+.btn-rose:hover:not(:disabled) {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 22px rgba(201, 138, 114, 0.45);
   transform: translateY(-1px);
 }
 
@@ -175,8 +231,8 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--border-strong);
 }
 .btn-outline:hover:not(:disabled) {
-  border-color: var(--gold); color: var(--gold);
-  background: rgba(176, 141, 87, 0.05);
+  border-color: var(--rose-gold); color: var(--rose-gold);
+  background: rgba(201, 138, 114, 0.06);
 }
 
 .btn-light {
@@ -185,7 +241,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .btn-light:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
 
-.btn-ghost { opacity: 0.75; letter-spacing: 0.14em; }
+.btn-ghost { opacity: 0.8; letter-spacing: 0.14em; }
 .btn-ghost:hover:not(:disabled) { opacity: 1; color: var(--gold); }
 
 .btn-danger {
@@ -201,6 +257,35 @@ h1, h2, h3, h4, h5, h6 {
 .btn-sm { padding: 0.55rem 1.15rem; font-size: 0.68rem; letter-spacing: 0.16em; }
 .btn-block { width: 100%; }
 
+/* ── Badges Haute Parfumerie ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.75rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+}
+.badge-gold {
+  background: rgba(26, 21, 15, 0.85);
+  color: var(--gold-soft);
+  border: 1px solid rgba(197, 159, 91, 0.4);
+}
+.badge-rose {
+  background: rgba(43, 26, 28, 0.85);
+  color: #fcebe4;
+  border: 1px solid rgba(201, 138, 114, 0.5);
+}
+.badge-dark {
+  background: rgba(18, 16, 19, 0.9);
+  color: #f4ecdf;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
 .link-underline {
   position: relative;
   display: inline-flex; align-items: center; gap: 0.7rem;
@@ -214,7 +299,7 @@ h1, h2, h3, h4, h5, h6 {
   transform-origin: left;
   transition: transform var(--transition-smooth);
 }
-.link-underline:hover { color: var(--gold); }
+.link-underline:hover { color: var(--rose-gold); }
 .link-underline:hover::after { transform: scaleX(0.6); }
 
 /* ── Utilitaires ── */
@@ -225,13 +310,14 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-secondary);
   background: var(--ivory);
   border: 1px solid var(--border);
+  border-radius: var(--radius-md);
 }
 .empty-state p { margin-bottom: 1.75rem; font-size: 1.02rem; }
 
 .spinner-inline {
   display: inline-block;
   width: 1rem; height: 1rem;
-  border: 2px solid rgba(176, 141, 87, 0.3);
+  border: 2px solid rgba(197, 159, 91, 0.3);
   border-radius: 50%;
   border-top-color: var(--gold);
   animation: spin 0.9s linear infinite;
@@ -244,4 +330,105 @@ h1, h2, h3, h4, h5, h6 {
   text-align: center;
   color: var(--text-secondary);
   letter-spacing: 0.08em;
+}
+
+/* ── Barre de Navigation Mobile Inférieure (Sticky Bottom Bar) ── */
+.mobile-bottom-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-bottom-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: rgba(18, 15, 19, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(197, 159, 91, 0.22);
+    z-index: 1000;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 0.5rem;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .mb-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: rgba(244, 236, 223, 0.65);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    padding: 0.3rem 0.6rem;
+    position: relative;
+    transition: all 0.2s ease;
+    flex: 1;
+  }
+
+  .mb-item.active, .mb-item:hover {
+    color: var(--gold-soft);
+  }
+
+  .mb-item.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 20px;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 2px;
+  }
+
+  .mb-item.femme.active, .mb-item.femme:hover {
+    color: var(--rose-gold-light);
+  }
+  .mb-item.femme.active::after {
+    background: var(--rose-gold);
+  }
+
+  .mb-badge {
+    position: absolute;
+    top: 2px;
+    right: 18px;
+    min-width: 17px;
+    height: 17px;
+    background: var(--rose-gold);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 700;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+  }
+
+  /* Bouton WhatsApp Flottant Mobile */
+  .floating-contact-btn {
+    position: fixed;
+    bottom: 74px;
+    right: 16px;
+    z-index: 999;
+    background: #25d366;
+    color: #ffffff;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 18px rgba(37, 211, 102, 0.45);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .floating-contact-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 24px rgba(37, 211, 102, 0.6);
+  }
 }

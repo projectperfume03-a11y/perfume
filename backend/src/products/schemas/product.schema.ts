@@ -15,6 +15,12 @@ export class Product extends Document {
   @Prop({ trim: true, default: 'Parfum de luxe' })
   category: string;
 
+  @Prop({ trim: true, default: '' })
+  brand: string;
+
+  @Prop({ trim: true, enum: ['femme', 'homme', 'mixte'], default: 'mixte' })
+  gender: string;
+
   @Prop({ default: true })
   inStock: boolean;
 
@@ -26,3 +32,4 @@ export class Product extends Document {
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
+

@@ -2,7 +2,22 @@ import { useRef, useState } from 'react';
 import { api, uploadImage } from '../api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../components/Toast.jsx';
-import { Camera, X } from 'lucide-react';
+import { Camera, X, Upload, Loader2 } from 'lucide-react';
+
+const CATEGORIES = [
+  'Floral',
+  'Oriental',
+  'Boisé',
+  'Frais',
+  'Fruité',
+  'Musqué',
+  'Aquatique',
+  'Gourmand',
+  'Cuir',
+  'Chypré',
+  'Aromatic',
+  'Parfum de luxe',
+];
 
 export default function ProductFormModal({ product, onClose, onSaved }) {
   const { token } = useAuth();
@@ -18,6 +33,8 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
     description: product?.description || '',
     price: product?.price ?? '',
     category: product?.category || '',
+    brand: product?.brand || '',
+    gender: product?.gender || 'mixte',
     inStock: product?.inStock !== false,
     image: product?.image || '',
     images: [
@@ -26,6 +43,7 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
       initialImages[2] || '',
     ],
   });
+
   const [uploadingIdx, setUploadingIdx] = useState(null);
   const [progress, setProgress] = useState(0);
   const fileRefs = [useRef(null), useRef(null), useRef(null)];
@@ -36,7 +54,7 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
     setForm((f) => {
       const nextImages = [...f.images];
       nextImages[index] = value;
-      const mainImg = index === 0 ? value : f.image || value;
+      const mainImg = index === 0 ? value : (f.image || value);
       return { ...f, image: mainImg, images: nextImages };
     });
   };
@@ -49,7 +67,7 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
     try {
       const url = await uploadImage(file, setProgress, token);
       setAltImage(index, url);
-      push(`Image ${index + 1} envoyée vers Cloudinary`);
+      push(`Image ${index + 1} chargée avec succès`);
     } catch (err) {
       push(err.message, 'error');
     } finally {
@@ -69,6 +87,8 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
       description: form.description,
       price: Number(form.price),
       category: form.category || 'Parfum de luxe',
+      brand: form.brand,
+      gender: form.gender,
       inStock: form.inStock,
       image: mainImg,
       images: cleanImages.length > 0 ? cleanImages : [mainImg],
@@ -77,10 +97,10 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
     try {
       if (isEdit) {
         await api.patch(`/products/${product._id}`, payload, token);
-        push('Création mise à jour');
+        push('Création mise à jour ✓');
       } else {
         await api.post('/products', payload, token);
-        push('Nouvelle pièce ajoutée à la vitrine');
+        push('Nouvelle pièce ajoutée à la vitrine ✓');
       }
       onSaved();
     } catch (err) {
@@ -92,7 +112,12 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal modal-dark" style={{ maxWidth: 680 }} onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal modal-dark"
+        style={{ maxWidth: 700 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* En-tête */}
         <div className="modal-header">
           <h2>{isEdit ? 'Modifier la création' : 'Nouveau parfum'}</h2>
           <button className="icon-btn-dark" onClick={onClose} aria-label="Fermer">
@@ -102,53 +127,82 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
 
         <form onSubmit={submit} className="modal-body">
 
+          {/* Nom */}
           <div className="form-row">
-            <label htmlFor="pf-name">Nom du parfum <span className="req">*</span></label>
+            <label htmlFor="pf-name">
+              Nom du parfum <span className="req">*</span>
+            </label>
             <input
               id="pf-name"
               required
               value={form.name}
               onChange={set('name')}
-              placeholder="Ex : Maison de Santal No. 22"
+              placeholder="Ex : Baccarat Rouge 540 Extrait"
             />
           </div>
 
+          {/* Prix + Marque */}
           <div className="form-row two">
             <div>
-              <label htmlFor="pf-price">Prix (DT) <span className="req">*</span></label>
+              <label htmlFor="pf-price">
+                Prix (DT) <span className="req">*</span>
+              </label>
               <input
                 id="pf-price"
                 required
                 type="number"
                 min="0"
-                step="0.01"
+                step="0.001"
                 value={form.price}
                 onChange={set('price')}
-                placeholder="49.90"
+                placeholder="189.900"
               />
             </div>
             <div>
-              <label htmlFor="pf-cat">Catégorie</label>
+              <label htmlFor="pf-brand">Maison / Marque</label>
               <input
-                id="pf-cat"
-                value={form.category}
-                onChange={set('category')}
-                placeholder="Floral, Oriental, Boisé…"
+                id="pf-brand"
+                value={form.brand}
+                onChange={set('brand')}
+                placeholder="Ex : Chanel, Dior, Tom Ford…"
               />
             </div>
           </div>
 
+          {/* Catégorie + Genre */}
+          <div className="form-row two">
+            <div>
+              <label htmlFor="pf-cat">Famille olfactive</label>
+              <select id="pf-cat" value={form.category} onChange={set('category')}>
+                <option value="">Sélectionner…</option>
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="pf-gender">Pour</label>
+              <select id="pf-gender" value={form.gender} onChange={set('gender')}>
+                <option value="femme">Femme</option>
+                <option value="homme">Homme</option>
+                <option value="mixte">Mixte / Unisexe</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Description */}
           <div className="form-row">
-            <label htmlFor="pf-desc">Description</label>
+            <label htmlFor="pf-desc">Description & notes olfactives</label>
             <textarea
               id="pf-desc"
               rows={3}
               value={form.description}
               onChange={set('description')}
-              placeholder="Notes de tête, cœur, base, sillage et ambiance…"
+              placeholder="Notes de tête, de cœur, de fond. Sillage, projection, longueur…"
             />
           </div>
 
+          {/* Images */}
           <div className="form-row">
             <span className="field-label">
               Photographies — Face, Profil, Détail <span className="req">*</span>
@@ -160,23 +214,30 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
                 return (
                   <div className="img-slot" key={idx}>
                     <span className="img-slot-label">
-                      Vue {idx + 1} · {viewLabels[idx]} {idx === 0 && <span className="req">*</span>}
+                      Vue {idx + 1} · {viewLabels[idx]}
+                      {idx === 0 && <span className="req"> *</span>}
                     </span>
 
-                    <div className="img-slot-preview">
-                      {imgVal
-                        ? <img src={imgVal} alt={`Aperçu ${viewLabels[idx]}`} />
-                        : <Camera size={20} strokeWidth={1.4} />}
-                    </div>
-
-                    <button
-                      type="button"
-                      className="btn btn-outline btn-sm btn-block"
-                      onClick={() => fileRefs[idx]?.current?.click()}
-                      disabled={uploadingIdx !== null}
+                    <div
+                      className="img-slot-preview"
+                      onClick={() => !isUploadingThis && fileRefs[idx]?.current?.click()}
+                      style={{ cursor: 'pointer' }}
+                      title="Cliquer pour choisir une image"
                     >
-                      {isUploadingThis ? `${progress} %…` : 'Choisir'}
-                    </button>
+                      {isUploadingThis ? (
+                        <div style={{ textAlign: 'center', color: 'var(--adm-gold)' }}>
+                          <Loader2 size={20} strokeWidth={1.6} style={{ animation: 'spin 1s linear infinite' }} />
+                          <div style={{ fontSize: '0.65rem', marginTop: '0.35rem' }}>{progress}%</div>
+                        </div>
+                      ) : imgVal ? (
+                        <img src={imgVal} alt={`Aperçu ${viewLabels[idx]}`} />
+                      ) : (
+                        <div style={{ textAlign: 'center', color: 'var(--adm-text-3)' }}>
+                          <Upload size={18} strokeWidth={1.4} />
+                          <div style={{ fontSize: '0.6rem', marginTop: '0.3rem' }}>Cliquer</div>
+                        </div>
+                      )}
+                    </div>
 
                     <input
                       ref={fileRefs[idx]}
@@ -198,6 +259,7 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
             </div>
           </div>
 
+          {/* Disponibilité */}
           <label className="checkbox-row">
             <input
               type="checkbox"
@@ -207,7 +269,8 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
             <span>Disponible à la vente</span>
           </label>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.9rem', paddingTop: '0.75rem' }}>
+          {/* Actions */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', paddingTop: '0.75rem' }}>
             <button type="button" className="btn btn-outline btn-sm" onClick={onClose}>
               Annuler
             </button>
@@ -216,7 +279,7 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
               className="btn btn-gold btn-sm"
               disabled={uploadingIdx !== null || (!form.image && !form.images[0])}
             >
-              {isEdit ? 'Enregistrer' : 'Ajouter à la vitrine'}
+              {isEdit ? 'Enregistrer les modifications' : 'Ajouter à la vitrine'}
             </button>
           </div>
         </form>

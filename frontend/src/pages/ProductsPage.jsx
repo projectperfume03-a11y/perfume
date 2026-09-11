@@ -4,9 +4,10 @@ import { api } from '../api.js';
 import ProductCard from '../components/ProductCard.jsx';
 import { useCart } from '../context/CartContext.jsx';
 import { useToast } from '../components/Toast.jsx';
+import { PRESTIGE_PRODUCTS } from '../data/mockProducts.js';
 import {
   LayoutGrid, List, ChevronRight, Search, ShoppingCart,
-  SearchX, X, Sparkles,
+  SearchX, X, Sparkles, SlidersHorizontal, Check,
 } from 'lucide-react';
 
 const MAX_PRICE = 600;
@@ -16,8 +17,11 @@ export default function ProductsPage() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
+
   const activeCategory = searchParams.get('categorie') || '';
-  const [search, setSearch] = useState('');
+  const activeGenre = searchParams.get('genre') || '';
+  const [search, setSearch] = useState(searchParams.get('q') || '');
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   const [viewMode, setViewModeState] = useState(() => localStorage.getItem('roya_view_mode') || 'grid');
   const setViewMode = (mode) => {
@@ -35,21 +39,61 @@ export default function ProductsPage() {
   useEffect(() => {
     Promise.all([api.get('/products'), api.get('/products/categories')])
       .then(([prods, cats]) => {
-        setProducts(prods);
-        setCategories(cats);
+        const validProds = (prods || []).filter(
+          (p) =>
+            p.name &&
+            !['ds5', 'raz'].includes(p.name.toLowerCase()) &&
+            !p.image?.includes('cutting_board') &&
+            !p.image?.includes('Priviet')
+        );
+
+        if (validProds.length > 0) {
+          setProducts(validProds);
+        } else {
+          setProducts(PRESTIGE_PRODUCTS);
+        }
+
+        const validCats = (cats || []).filter(
+          (c) => c && !['85', 'test', 'Planches'].includes(c)
+        );
+        setCategories(
+          validCats.length > 0
+            ? validCats
+            : ['Pour Elle', 'Pour Lui', 'Niche & Mixte', 'Floraux', 'Boisés']
+        );
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setProducts(PRESTIGE_PRODUCTS);
+        setCategories(['Pour Elle', 'Pour Lui', 'Niche & Mixte', 'Floraux', 'Boisés']);
+        setLoading(false);
+      });
   }, []);
 
   const filtered = useMemo(() => {
     let result = products.filter((p) => {
+      // Filtre genre (60% Femme, 40% Homme)
+      let matchesGenre = true;
+      if (activeGenre === 'femme') {
+        matchesGenre = p.gender === 'femme' || p.category?.toLowerCase().includes('elle');
+      } else if (activeGenre === 'homme') {
+        matchesGenre = p.gender === 'homme' || p.category?.toLowerCase().includes('lui');
+      } else if (activeGenre === 'mixte') {
+        matchesGenre = p.gender === 'mixte' || p.category?.toLowerCase().includes('mixte') || p.category?.toLowerCase().includes('niche');
+      }
+
       const matchesCat = !activeCategory || p.category === activeCategory;
       const q = search.trim().toLowerCase();
-      const matchesSearch = !q || p.name.toLowerCase().includes(q);
+      const matchesSearch =
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        (p.brand && p.brand.toLowerCase().includes(q)) ||
+        (p.family && p.family.toLowerCase().includes(q));
+
       const matchesPrice = p.price <= priceRange;
       const matchesStock = !inStockOnly || p.inStock !== false;
-      return matchesCat && matchesSearch && matchesPrice && matchesStock;
+
+      return matchesGenre && matchesCat && matchesSearch && matchesPrice && matchesStock;
     });
 
     if (sortOption === 'price-asc') {
@@ -58,13 +102,30 @@ export default function ProductsPage() {
       result.sort((a, b) => b.price - a.price);
     }
     return result;
-  }, [products, activeCategory, search, priceRange, inStockOnly, sortOption]);
+  }, [products, activeGenre, activeCategory, search, priceRange, inStockOnly, sortOption]);
+
+  const setGenre = (genre) => {
+    const params = new URLSearchParams(searchParams);
+    if (genre && genre !== activeGenre) {
+      params.set('genre', genre);
+    } else {
+      params.delete('genre');
+    }
+    setSearchParams(params);
+  };
 
   const setCategory = (cat) => {
-    setSearchParams(cat && cat !== activeCategory ? { categorie: cat } : {});
+    const params = new URLSearchParams(searchParams);
+    if (cat && cat !== activeCategory) {
+      params.set('categorie', cat);
+    } else {
+      params.delete('categorie');
+    }
+    setSearchParams(params);
   };
 
   const hasActiveFilters =
+    Boolean(activeGenre) ||
     Boolean(activeCategory) ||
     Boolean(search.trim()) ||
     priceRange < MAX_PRICE ||
@@ -76,42 +137,83 @@ export default function ProductsPage() {
     setSortOption('popularity');
     setSearch('');
     setSearchParams({});
+    setMobileFilterOpen(false);
   };
 
   return (
     <div className="container page-collection">
-
       <nav className="breadcrumbs" aria-label="Fil d'Ariane">
         <Link to="/">Accueil</Link>
         <ChevronRight size={12} />
-        <span className="current">Collection</span>
+        <span className="current">Haute Curation Parfums</span>
       </nav>
 
       <header className="collection-head">
-        <span className="eyebrow">La maison ROYA</span>
+        <span className="eyebrow">Haute Parfumerie</span>
         <h1 className="collection-title">
-          Une fragrance pour <em>chaque émotion</em>
+          Le Vestiaire des <em>Grandes Émotions</em>
         </h1>
         <p className="collection-lead">
-          Une sélection raffinée de parfums de marques iconiques, conçus pour offrir
-          une présence élégante, mémorable et profondément personnelle.
+          Une collection exclusive 60% féminine et 40% masculine, sélectionnée parmi les
+          plus grandes maisons de parfum du monde pour sublimer votre présence.
         </p>
         <div className="ornament left"><i /></div>
+
+        {/* ── Puces Filtres Rapides par Genre (Mobile-First) ── */}
+        <div className="genre-filter-bar">
+          <button
+            className={`genre-pill ${!activeGenre ? 'active' : ''}`}
+            onClick={() => setGenre('')}
+          >
+            Tous les Sillages ({products.length})
+          </button>
+          <button
+            className={`genre-pill femme ${activeGenre === 'femme' ? 'active' : ''}`}
+            onClick={() => setGenre('femme')}
+          >
+            <Sparkles size={13} />
+            Pour Elle <span className="pill-percent">60%</span>
+          </button>
+          <button
+            className={`genre-pill homme ${activeGenre === 'homme' ? 'active' : ''}`}
+            onClick={() => setGenre('homme')}
+          >
+            Pour Lui <span className="pill-percent">40%</span>
+          </button>
+          <button
+            className={`genre-pill mixte ${activeGenre === 'mixte' ? 'active' : ''}`}
+            onClick={() => setGenre('mixte')}
+          >
+            Niche & Unisexe
+          </button>
+        </div>
       </header>
 
-      {/* ── Barre d'outils ── */}
+      {/* ── Barre d'outils Collection ── */}
       <div className="collection-toolbar">
-        <span className="toolbar-count">
-          {loading
-            ? 'Sélection…'
-            : `${filtered.length} résultat${filtered.length > 1 ? 's' : ''}${activeCategory ? ` — ${activeCategory}` : ''}`}
-        </span>
+        <div className="toolbar-left">
+          <button
+            className="mobile-filter-trigger mobile-only"
+            onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
+            aria-label="Ouvrir les filtres de recherche"
+          >
+            <SlidersHorizontal size={15} />
+            <span>Filtres & Budget</span>
+            {hasActiveFilters && <span className="filter-count-dot" />}
+          </button>
+
+          <span className="toolbar-count desktop-only">
+            {loading
+              ? 'Sélection…'
+              : `${filtered.length} fragrance${filtered.length > 1 ? 's' : ''}${activeGenre ? ` · ${activeGenre === 'femme' ? 'Pour Elle' : 'Pour Lui'}` : ''}`}
+          </span>
+        </div>
 
         <div className="toolbar-right">
           <label className="toolbar-sort">
-            <span>Trier par</span>
+            <span>Trier</span>
             <select className="sort-select" value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
-              <option value="popularity">Popularité</option>
+              <option value="popularity">Popularité & Signatures</option>
               <option value="price-asc">Prix croissant</option>
               <option value="price-desc">Prix décroissant</option>
             </select>
@@ -123,14 +225,14 @@ export default function ProductsPage() {
               onClick={() => setViewMode('grid')}
               title="Affichage grille"
             >
-              <LayoutGrid size={17} strokeWidth={1.6} />
+              <LayoutGrid size={16} strokeWidth={1.7} />
             </button>
             <button
               className={viewMode === 'list' ? 'active' : ''}
               onClick={() => setViewMode('list')}
               title="Affichage liste"
             >
-              <List size={17} strokeWidth={1.6} />
+              <List size={16} strokeWidth={1.7} />
             </button>
           </div>
         </div>
@@ -139,6 +241,14 @@ export default function ProductsPage() {
       {/* ── Puces de filtres actifs ── */}
       {hasActiveFilters && (
         <div className="active-chips">
+          {activeGenre && (
+            <span className="filter-chip">
+              Sélection : <b>{activeGenre === 'femme' ? 'Pour Elle (60%)' : activeGenre === 'homme' ? 'Pour Lui (40%)' : 'Niche'}</b>
+              <button onClick={() => setGenre('')} aria-label="Retirer le genre">
+                <X size={12} strokeWidth={2} />
+              </button>
+            </span>
+          )}
           {activeCategory && (
             <span className="filter-chip">
               Catégorie : <b>{activeCategory}</b>
@@ -157,7 +267,7 @@ export default function ProductsPage() {
           )}
           {priceRange < MAX_PRICE && (
             <span className="filter-chip">
-              Budget : <b>jusqu'à {priceRange} DT</b>
+              Budget : <b>≤ {priceRange} DT</b>
               <button onClick={() => setPriceRange(MAX_PRICE)} aria-label="Retirer le budget">
                 <X size={12} strokeWidth={2} />
               </button>
@@ -165,7 +275,7 @@ export default function ProductsPage() {
           )}
           {inStockOnly && (
             <span className="filter-chip">
-              <b>En stock uniquement</b>
+              <b>En stock</b>
               <button onClick={() => setInStockOnly(false)} aria-label="Retirer le filtre stock">
                 <X size={12} strokeWidth={2} />
               </button>
@@ -178,17 +288,23 @@ export default function ProductsPage() {
       )}
 
       <div className="shop-layout">
+        {/* ── Sidebar Filtres (Desktop + Drawer Mobile) ── */}
+        <aside className={`filters ${mobileFilterOpen ? 'mobile-open' : ''}`}>
+          <div className="filters-drawer-header mobile-only">
+            <h3>Filtrer la Curation</h3>
+            <button onClick={() => setMobileFilterOpen(false)} aria-label="Fermer les filtres">
+              <X size={20} />
+            </button>
+          </div>
 
-        {/* ── Filtres ── */}
-        <aside className="filters">
           <div className="filter-block">
-            <h3 className="filter-title">Recherche</h3>
+            <h3 className="filter-title">Recherche Fragrance / Marque</h3>
             <div className="search-field">
               <Search size={15} strokeWidth={1.6} />
               <input
                 type="text"
                 className="input"
-                placeholder="Chercher un parfum…"
+                placeholder="Dior, Chanel, Rose, Oud…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -196,11 +312,11 @@ export default function ProductsPage() {
           </div>
 
           <div className="filter-block">
-            <h3 className="filter-title">Catégories</h3>
+            <h3 className="filter-title">Univers Olfactifs</h3>
             <ul className="cat-list">
               <li>
-                <button className={!activeCategory ? 'active' : ''} onClick={() => setCategory('')}>
-                  Toute la collection
+                <button className={!activeCategory ? 'active' : ''} onClick={() => { setCategory(''); setMobileFilterOpen(false); }}>
+                  Toutes les familles
                   <span className="cat-count">{products.length}</span>
                 </button>
               </li>
@@ -208,7 +324,7 @@ export default function ProductsPage() {
                 <li key={c}>
                   <button
                     className={activeCategory === c ? 'active' : ''}
-                    onClick={() => setCategory(c)}
+                    onClick={() => { setCategory(c); setMobileFilterOpen(false); }}
                   >
                     {c}
                     <span className="cat-count">{products.filter((p) => p.category === c).length}</span>
@@ -219,7 +335,7 @@ export default function ProductsPage() {
           </div>
 
           <div className="filter-block">
-            <h3 className="filter-title">Budget</h3>
+            <h3 className="filter-title">Budget Maximum</h3>
             <input
               type="range"
               className="price-slider"
@@ -232,7 +348,7 @@ export default function ProductsPage() {
             />
             <div className="price-values">
               <span>0 DT</span>
-              <span>Jusqu'à <b style={{ color: 'var(--ink)', fontWeight: 500 }}>{priceRange} DT</b></span>
+              <span>Jusqu'à <b style={{ color: 'var(--rose-gold)', fontWeight: 600 }}>{priceRange} DT</b></span>
             </div>
           </div>
 
@@ -258,41 +374,40 @@ export default function ProductsPage() {
               </button>
             )}
           </div>
+
+          <div className="mobile-only" style={{ marginTop: '1.5rem' }}>
+            <button
+              className="btn btn-primary btn-block"
+              onClick={() => setMobileFilterOpen(false)}
+            >
+              Afficher {filtered.length} résultats
+            </button>
+          </div>
         </aside>
 
         {/* ── Résultats ── */}
-        <main>
+        <main className="shop-main">
           {loading ? (
             <div className="grid-products">
               {[0, 1, 2, 3, 4, 5].map((i) => (
-                <div key={i}>
-                  <div
-                    style={{
-                      aspectRatio: '4 / 5',
-                      background: 'linear-gradient(100deg, var(--sand) 40%, var(--linen) 50%, var(--sand) 60%)',
-                      backgroundSize: '200% 100%',
-                      animation: 'shimmerBg 1.4s infinite',
-                    }}
-                  />
-                  <div style={{
-                    height: 13, width: '55%', margin: '1.25rem auto 0.7rem',
-                    background: 'var(--sand)', animation: 'shimmerBg 1.4s infinite',
+                <div
+                  key={i}
+                  style={{
+                    aspectRatio: '3 / 4',
+                    background: 'linear-gradient(100deg, var(--sand) 40%, var(--linen) 50%, var(--sand) 60%)',
                     backgroundSize: '200% 100%',
-                  }} />
-                  <div style={{
-                    height: 11, width: '35%', margin: '0 auto',
-                    background: 'var(--sand)', backgroundSize: '200% 100%',
+                    borderRadius: 'var(--radius-sm)',
                     animation: 'shimmerBg 1.4s infinite',
-                  }} />
-                </div>
+                  }}
+                />
               ))}
               <style>{`@keyframes shimmerBg { to { background-position: -200% 0; } }`}</style>
             </div>
           ) : filtered.length === 0 ? (
             <div className="empty-state">
-              <SearchX size={44} strokeWidth={1.1} style={{ color: 'var(--gold)', margin: '0 auto 1.4rem' }} />
-              <h3 style={{ fontSize: '1.7rem', marginBottom: '0.7rem' }}>Aucun parfum trouvé</h3>
-              <p>Essayez d’élargir votre budget ou retirez un ou deux filtres.</p>
+              <SearchX size={44} strokeWidth={1.1} style={{ color: 'var(--rose-gold)', margin: '0 auto 1.4rem' }} />
+              <h3 style={{ fontSize: '1.7rem', marginBottom: '0.7rem' }}>Aucune fragrance correspondante</h3>
+              <p>Essayez d’élargir votre budget ou d'ajuster le filtre de sélection.</p>
               <button className="btn btn-primary" onClick={resetFilters}>
                 <Sparkles size={14} strokeWidth={1.8} />
                 Réinitialiser les filtres
@@ -316,23 +431,19 @@ export default function ProductsPage() {
                 return (
                   <article className="list-item" key={p._id}>
                     <Link to={`/produit/${p._id}`} className="list-item-media">
-                      <img src={p.image || '/roya-hero-bottle.jpg'} alt={p.name} loading="lazy" />
+                      <img src={p.image || '/roya-cat-niche.jpg'} alt={p.name} loading="lazy" />
                     </Link>
 
                     <div className="list-item-body">
                       <span className="pc-cat" style={{ textAlign: 'left' }}>
-                        {p.category || 'Parfum de luxe'}
+                        {p.brand || p.category || 'Maison de Haute Parfumerie'}
                       </span>
                       <h3 className="pc-name" style={{ fontSize: '1.55rem' }}>
                         <Link to={`/produit/${p._id}`}>{p.name}</Link>
                       </h3>
+                      {p.family && <span className="pc-family">{p.family}</span>}
                       <p className="list-item-desc">
-                        {shortDesc || 'Un parfum élégant qui se distingue par son sillage raffiné et sa signature distinctive.'}{' '}
-                        {(needsMore || !desc) && (
-                          <Link to={`/produit/${p._id}`} className="list-item-more">
-                            Lire la suite
-                          </Link>
-                        )}
+                        {shortDesc || 'Une fragrance d’exception créée pour laisser un sillage raffiné et inoubliable.'}
                       </p>
                     </div>
 
@@ -341,7 +452,7 @@ export default function ProductsPage() {
                         {p.price.toFixed(3).replace('.', ',')} DT
                       </div>
                       <Link to={`/produit/${p._id}`} className="btn btn-outline btn-sm btn-block">
-                        Voir la pièce
+                        Découvrir le flacon
                       </Link>
                       <button
                         className={`btn ${outOfStock ? 'btn-light' : 'btn-primary'} btn-sm btn-block`}

@@ -14,6 +14,8 @@ import AdminDashboard from './admin/AdminDashboard.jsx';
 import AdminRoute from './admin/AdminRoute.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 
+import MobileBottomBar from './components/MobileBottomBar.jsx';
+
 export default function App() {
   return (
     <Toaster>
@@ -45,6 +47,7 @@ export default function App() {
                 </Routes>
               </main>
               <Footer />
+              <MobileBottomBar />
             </>
           }
         />
