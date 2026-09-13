@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Package, ShoppingBag, ExternalLink, LogOut, Bell, Menu, X,
+  LayoutDashboard, Package, ShoppingBag, ExternalLink, LogOut, Bell, Menu, X, SlidersHorizontal,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useAdminStats } from './useAdminStats.js';
@@ -9,6 +9,7 @@ import AdminStats from './AdminStats.jsx';
 import AdminOverview from './AdminOverview.jsx';
 import ProductsAdmin from './ProductsAdmin.jsx';
 import OrdersAdmin from './OrdersAdmin.jsx';
+import OptionsAdmin from './OptionsAdmin.jsx';
 import '../styles/admin.css';
 
 const TAB_META = {
@@ -23,6 +24,10 @@ const TAB_META = {
   orders: {
     title: 'Commandes',
     subtitle: 'Suivez et préparez les commandes de vos clients',
+  },
+  options: {
+    title: 'Options & Expédition',
+    subtitle: 'Gérez les frais de livraison et la configuration de la Maison',
   },
 };
 
@@ -91,6 +96,13 @@ export default function AdminDashboard() {
               {stats.orders > 0 && (
                 <span className="vip-nav-count">{stats.orders}</span>
               )}
+            </button>
+            <button
+              className={tab === 'options' ? 'active' : ''}
+              onClick={() => switchTab('options')}
+            >
+              <SlidersHorizontal size={17} strokeWidth={1.6} />
+              Options
             </button>
           </nav>
         </div>
@@ -161,6 +173,7 @@ export default function AdminDashboard() {
           {tab === 'overview' && <AdminOverview onGoOrders={() => switchTab('orders')} />}
           {tab === 'products' && <ProductsAdmin refreshStats={refresh} />}
           {tab === 'orders' && <OrdersAdmin refreshStats={refresh} />}
+          {tab === 'options' && <OptionsAdmin />}
         </main>
       </div>
     </div>

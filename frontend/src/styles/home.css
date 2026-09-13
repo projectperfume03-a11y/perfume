@@ -342,8 +342,12 @@
 /* ── Univers d'Auteur / Catégories (Cartes Luxueuses) ── */
 .cat-grid-luxury {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(260px, 430px));
   gap: 2rem;
+  justify-content: center;
+  align-items: stretch;
+  max-width: 980px;
+  margin: 0 auto;
 }
 
 .cat-card-luxury {

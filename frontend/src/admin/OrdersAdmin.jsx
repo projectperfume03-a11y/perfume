@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../components/Toast.jsx';
 import { ChevronDown, ChevronUp, Trash2, MapPin, Phone, MessageSquare, Package } from 'lucide-react';
 import ConfirmModal from '../components/ConfirmModal.jsx';
+import AdminSelect from './AdminSelect.jsx';
 
 const STATUSES = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 
@@ -14,6 +15,13 @@ const STATUS_META = {
   delivered: { label: 'Livrée',      color: '#a9c48d', bg: 'rgba(120,180,100,0.1)',  border: 'rgba(120,180,100,0.22)' },
   cancelled: { label: 'Annulée',     color: '#e0968d', bg: 'rgba(192,86,74,0.1)',    border: 'rgba(192,86,74,0.22)' },
 };
+
+const STATUS_OPTIONS = STATUSES.map((s) => ({
+  value: s,
+  label: STATUS_META[s].label,
+  color: STATUS_META[s].color,
+  bg: STATUS_META[s].bg,
+}));
 
 function StatusBadgeInline({ status }) {
   const m = STATUS_META[status] || STATUS_META.pending;
@@ -60,42 +68,15 @@ export default function OrdersAdmin({ refreshStats }) {
   };
 
   const executeChangeStatus = async (order, status) => {
-    setConfirm((prev) => ({ ...prev, isLoading: true }));
+    if (order.status === status) return;
     try {
       const updated = await api.patch(`/orders/${order._id}/status`, { status }, token);
       setOrders((prev) => prev.map((o) => (o._id === updated._id ? updated : o)));
-      push(`Commande marquée ${STATUS_META[status].label.toLowerCase()}`);
+      push(`Statut de la commande #${order._id.slice(-6)} : ${STATUS_META[status]?.label || status} ✓`);
       if (refreshStats) refreshStats();
-      setConfirm(null);
     } catch (e) {
       push(e.message, 'error');
-      setConfirm((prev) => ({ ...prev, isLoading: false }));
     }
-  };
-
-  const executeRemove = async (order) => {
-    setConfirm((prev) => ({ ...prev, isLoading: true }));
-    try {
-      await api.del(`/orders/${order._id}`, token);
-      push('Commande supprimée');
-      afterChange();
-      setConfirm(null);
-    } catch (e) {
-      push(e.message, 'error');
-      setConfirm((prev) => ({ ...prev, isLoading: false }));
-    }
-  };
-
-  const confirmChangeStatus = (order, newStatus) => {
-    if (order.status === newStatus) return;
-    setConfirm({
-      isOpen: true,
-      title: 'Mettre à jour le statut',
-      message: `La commande #${order._id.slice(-6)} passera au statut « ${STATUS_META[newStatus]?.label} ».`,
-      confirmText: 'Mettre à jour',
-      onConfirm: () => executeChangeStatus(order, newStatus),
-      onCancel: () => setConfirm(null),
-    });
   };
 
   const confirmRemove = (order) => {
@@ -220,17 +201,13 @@ export default function OrdersAdmin({ refreshStats }) {
                       </div>
                     </td>
                     <td>
-                      <select
-                        className="status-select"
+                      <AdminSelect
                         value={o.status}
-                        onChange={(e) => confirmChangeStatus(o, e.target.value)}
-                        aria-label={`Statut de la commande ${o._id.slice(-6)}`}
-                        style={{ color: STATUS_META[o.status]?.color || 'inherit' }}
-                      >
-                        {STATUSES.map((s) => (
-                          <option key={s} value={s}>{STATUS_META[s].label}</option>
-                        ))}
-                      </select>
+                        onChange={(e) => executeChangeStatus(o, e.target.value)}
+                        options={STATUS_OPTIONS}
+                        size="sm"
+                        className="status-admin-select"
+                      />
                     </td>
                     <td className="cell-price">
                       {(o.total || 0).toLocaleString('fr-FR', { minimumFractionDigits: 3 })} DT
@@ -301,8 +278,37 @@ export default function OrdersAdmin({ refreshStats }) {
                                   </span>
                                 </div>
                               )}
-                              <div style={{ marginTop: '0.5rem' }}>
-                                <StatusBadgeInline status={o.status} />
+                              <div style={{ marginTop: '0.65rem' }}>
+                                <span style={{ display: 'block', fontSize: '0.62rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--adm-text-3)', marginBottom: '0.45rem' }}>
+                                  Modifier le statut :
+                                </span>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                                  {STATUSES.map((st) => {
+                                    const isCur = o.status === st;
+                                    const meta = STATUS_META[st];
+                                    return (
+                                      <button
+                                        key={st}
+                                        type="button"
+                                        onClick={() => executeChangeStatus(o, st)}
+                                        style={{
+                                          padding: '0.3rem 0.65rem',
+                                          borderRadius: '6px',
+                                          fontSize: '0.68rem',
+                                          fontWeight: isCur ? 700 : 500,
+                                          color: isCur ? meta.color : 'var(--adm-text-2)',
+                                          background: isCur ? meta.bg : 'rgba(255,255,255,0.7)',
+                                          border: `1px solid ${isCur ? meta.border : 'rgba(188,156,130,0.2)'}`,
+                                          cursor: isCur ? 'default' : 'pointer',
+                                          transition: 'all 0.2s',
+                                        }}
+                                        title={`Passer au statut ${meta.label}`}
+                                      >
+                                        {meta.label} {isCur && '✓'}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
                               </div>
                             </div>
                           </div>

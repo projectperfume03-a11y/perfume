@@ -8,6 +8,7 @@ export const PRESTIGE_PRODUCTS = [
     gender: 'femme',
     price: 490,
     rating: 5,
+    bestSellerRank: 3,
     inStock: true,
     badge: { text: 'Culte & Signature', cls: 'badge-gold' },
     image: '/roya-cat-niche.jpg',
@@ -28,6 +29,7 @@ export const PRESTIGE_PRODUCTS = [
     gender: 'femme',
     price: 420,
     rating: 5,
+    bestSellerRank: 1,
     inStock: true,
     badge: { text: 'Best-seller 2026', cls: 'badge-rose' },
     image: '/roya-cat-femme.jpg',
@@ -48,6 +50,7 @@ export const PRESTIGE_PRODUCTS = [
     gender: 'femme',
     price: 395,
     rating: 5,
+    bestSellerRank: 4,
     inStock: true,
     badge: { text: 'Coup de cœur', cls: 'badge-rose' },
     image: '/roya-hero-bottle.jpg',
@@ -68,6 +71,7 @@ export const PRESTIGE_PRODUCTS = [
     gender: 'femme',
     price: 540,
     rating: 5,
+    bestSellerRank: 7,
     inStock: true,
     badge: { text: 'Haute Niche', cls: 'badge-gold' },
     image: '/roya-cat-femme.jpg',
@@ -88,6 +92,7 @@ export const PRESTIGE_PRODUCTS = [
     gender: 'homme',
     price: 470,
     rating: 5,
+    bestSellerRank: 2,
     inStock: true,
     badge: { text: 'Best-seller Homme', cls: 'badge-dark' },
     image: '/roya-cat-homme.jpg',
@@ -108,6 +113,7 @@ export const PRESTIGE_PRODUCTS = [
     gender: 'homme',
     price: 520,
     rating: 5,
+    bestSellerRank: 5,
     inStock: true,
     badge: { text: 'Prestige Privé', cls: 'badge-dark' },
     image: '/roya-cat-homme.jpg',
@@ -128,6 +134,7 @@ export const PRESTIGE_PRODUCTS = [
     gender: 'homme',
     price: 440,
     rating: 5,
+    bestSellerRank: 6,
     inStock: true,
     badge: { text: 'Élégance Intemporelle', cls: 'badge-dark' },
     image: '/roya-hero-bottle.jpg',
@@ -148,6 +155,7 @@ export const PRESTIGE_PRODUCTS = [
     gender: 'mixte',
     price: 580,
     rating: 5,
+    bestSellerRank: 8,
     inStock: true,
     badge: { text: 'Édition Rare', cls: 'badge-gold' },
     image: '/roya-cat-niche.jpg',
@@ -164,27 +172,19 @@ export const PRESTIGE_PRODUCTS = [
 export const CATEGORIES_SHOWCASE = [
   {
     name: 'Pour Elle',
-    subtitle: '60% de notre curation',
+    subtitle: '',
     tagline: 'Élégance florale, poudrée et sensuelle',
-    count: '34 fragrances',
+    count: '',
     img: '/roya-cat-femme.jpg',
     link: '/produits?genre=femme'
   },
   {
     name: 'Pour Lui',
-    subtitle: '40% de notre curation',
+    subtitle: '',
     tagline: 'Sillages profonds, boisés et magnétiques',
-    count: '24 fragrances',
+    count: '',
     img: '/roya-cat-homme.jpg',
     link: '/produits?genre=homme'
-  },
-  {
-    name: 'Niche & Extrait',
-    subtitle: 'L’absolu du luxe',
-    tagline: 'Ambre, oud noble et accords rares',
-    count: '16 éditions',
-    img: '/roya-cat-niche.jpg',
-    link: '/produits?categorie=Niche+%26+Mixte'
   }
 ];
 

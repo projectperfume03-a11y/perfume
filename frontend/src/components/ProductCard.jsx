@@ -14,10 +14,10 @@ export default function ProductCard({ product }) {
     const n = (product.name || '').toLowerCase();
     const g = product.gender || '';
     if (g === 'femme' || n.includes('rose') || n.includes('mademoiselle') || n.includes('delina')) {
-      return { text: '60% Pour Elle', cls: 'badge-rose' };
+      return { text: 'Pour Elle', cls: 'badge-rose' };
     }
     if (g === 'homme' || n.includes('sauvage') || n.includes('oud') || n.includes('bleu')) {
-      return { text: '40% Pour Lui', cls: 'badge-dark' };
+      return { text: 'Pour Lui', cls: 'badge-dark' };
     }
     return { text: 'Haute Signature', cls: 'badge-gold' };
   };

@@ -474,33 +474,49 @@
   color: var(--text-muted);
 }
 
-.cat-list { list-style: none; display: flex; flex-direction: column; gap: 0.1rem; }
+.cat-list { list-style: none; display: flex; flex-direction: column; gap: 0.12rem; }
 .cat-list button {
   width: 100%;
   display: flex; justify-content: space-between; align-items: center;
-  padding: 0.6rem 0.7rem 0.6rem 0.5rem;
-  font-size: 0.92rem;
-  color: var(--text-secondary);
+  gap: 0.75rem;
+  padding: 0.7rem 0.8rem 0.7rem 0.7rem;
+  font-size: 0.96rem;
+  color: var(--text-primary);
   border-left: 2px solid transparent;
   transition: color var(--transition-fast), background var(--transition-fast),
-              border-color var(--transition-fast), padding-left var(--transition-fast);
+              border-color var(--transition-fast), padding-left var(--transition-fast), opacity var(--transition-fast);
   text-align: left;
+  opacity: 0.92;
 }
 .cat-list button:hover {
   color: var(--ink);
-  background: var(--gold-pale);
-  padding-left: 0.85rem;
+  background: rgba(201, 138, 114, 0.08);
+  padding-left: 0.95rem;
+  opacity: 1;
 }
 .cat-list button.active {
-  color: var(--ink); font-weight: 500;
-  border-left-color: var(--gold);
-  background: linear-gradient(90deg, var(--gold-pale), transparent);
+  color: var(--ink);
+  font-weight: 600;
+  border-left-color: var(--rose-gold);
+  background: linear-gradient(90deg, rgba(201, 138, 114, 0.18), rgba(201, 138, 114, 0.04) 70%, transparent);
+  opacity: 1;
 }
-.cat-list button.active:hover { padding-left: 0.5rem; }
+.cat-list button.active:hover { padding-left: 0.7rem; }
+.cat-label-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.cat-list-icon {
+  flex-shrink: 0;
+  color: currentColor;
+}
 .cat-count {
   font-size: 0.68rem; color: var(--text-muted);
   letter-spacing: 0.1em;
   font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 .cat-list button.active .cat-count { color: var(--gold); }
 
@@ -647,4 +663,120 @@ input:checked + .switch::after { transform: translateX(18px); }
     transform: translateX(0);
   }
 }
+
+/* ── Pagination Haute Parfumerie (9 créations / page) ── */
+.roya-pagination-container {
+  margin-top: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  padding-top: 2.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.roya-pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.roya-page-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 999px;
+  background: var(--ivory);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-xs);
+  user-select: none;
+}
+
+.roya-page-nav:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(188, 156, 130, 0.2);
+}
+
+.roya-page-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.roya-page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.roya-page-num {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-xs);
+}
+
+.roya-page-num:hover:not(.active) {
+  border-color: var(--gold);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.roya-page-num.active {
+  background: var(--noir-900);
+  color: var(--gold-soft);
+  border-color: var(--gold);
+  box-shadow: 0 4px 16px rgba(18, 16, 19, 0.3);
+  font-weight: 700;
+}
+
+.roya-pagination-info {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin: 0;
+  font-style: italic;
+  font-family: var(--font-serif);
+}
+
+@media (max-width: 600px) {
+  .roya-page-nav span {
+    display: none;
+  }
+  .roya-page-nav {
+    padding: 0.6rem 0.8rem;
+  }
+  .roya-page-num {
+    width: 36px;
+    height: 36px;
+    font-size: 0.78rem;
+  }
+}
+
 

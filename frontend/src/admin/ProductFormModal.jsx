@@ -1,8 +1,10 @@
 import { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { api, uploadImage } from '../api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../components/Toast.jsx';
 import { Camera, X, Upload, Loader2 } from 'lucide-react';
+import AdminSelect from './AdminSelect.jsx';
 
 const CATEGORIES = [
   'Floral',
@@ -110,22 +112,28 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
 
   const viewLabels = ['Face', 'Profil', 'Détail'];
 
-  return (
-    <div className="modal-overlay" onClick={onClose}>
+  return createPortal(
+    <div className="modal-overlay modal-admin-overlay" onClick={onClose}>
       <div
-        className="modal modal-dark"
-        style={{ maxWidth: 700 }}
+        className="modal modal-admin"
+        style={{ maxWidth: 680 }}
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
       >
         {/* En-tête */}
-        <div className="modal-header">
-          <h2>{isEdit ? 'Modifier la création' : 'Nouveau parfum'}</h2>
-          <button className="icon-btn-dark" onClick={onClose} aria-label="Fermer">
-            <X size={18} strokeWidth={1.6} />
+        <div className="modal-header modal-admin-header">
+          <div>
+            <h2>{isEdit ? 'Modifier la création' : 'Nouveau parfum'}</h2>
+            <p className="modal-admin-sub">Vitrine Maison ROYA · Haute Parfumerie</p>
+          </div>
+          <button type="button" className="icon-btn-dark" onClick={onClose} aria-label="Fermer">
+            <X size={18} strokeWidth={1.8} />
           </button>
         </div>
 
-        <form onSubmit={submit} className="modal-body">
+        <form onSubmit={submit} className="modal-admin-form">
+          <div className="modal-body modal-admin-body">
 
           {/* Nom */}
           <div className="form-row">
@@ -173,20 +181,26 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
           <div className="form-row two">
             <div>
               <label htmlFor="pf-cat">Famille olfactive</label>
-              <select id="pf-cat" value={form.category} onChange={set('category')}>
-                <option value="">Sélectionner…</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
+              <AdminSelect
+                id="pf-cat"
+                value={form.category}
+                onChange={set('category')}
+                options={CATEGORIES}
+                placeholder="Sélectionner une famille…"
+              />
             </div>
             <div>
               <label htmlFor="pf-gender">Pour</label>
-              <select id="pf-gender" value={form.gender} onChange={set('gender')}>
-                <option value="femme">Femme</option>
-                <option value="homme">Homme</option>
-                <option value="mixte">Mixte / Unisexe</option>
-              </select>
+              <AdminSelect
+                id="pf-gender"
+                value={form.gender}
+                onChange={set('gender')}
+                options={[
+                  { value: 'femme', label: 'Femme' },
+                  { value: 'homme', label: 'Homme' },
+                  { value: 'mixte', label: 'Mixte / Unisexe' },
+                ]}
+              />
             </div>
           </div>
 
@@ -269,8 +283,10 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
             <span>Disponible à la vente</span>
           </label>
 
-          {/* Actions */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', paddingTop: '0.75rem' }}>
+          </div>
+
+          {/* Actions épinglées en bas */}
+          <div className="modal-footer modal-admin-footer">
             <button type="button" className="btn btn-outline btn-sm" onClick={onClose}>
               Annuler
             </button>
@@ -284,6 +300,7 @@ export default function ProductFormModal({ product, onClose, onSaved }) {
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -4,11 +4,8 @@ import { X, ShoppingBag, ArrowRight } from 'lucide-react';
 
 export default function CartDrawer() {
   const {
-    items, isOpen, setIsOpen, updateQuantity, removeItem, total, count,
+    items, isOpen, setIsOpen, updateQuantity, removeItem, total, count, shippingCost, grandTotal,
   } = useCart();
-
-  const freeShippingFrom = 100;
-  const remaining = Math.max(0, freeShippingFrom - total);
 
   return (
     <>
@@ -82,20 +79,23 @@ export default function CartDrawer() {
             </div>
 
             <div className="cart-foot">
-              {remaining > 0 ? (
-                <p className="shipping-note">
-                  Plus que <strong>{remaining.toFixed(3).replace('.', ',')} DT</strong> pour la livraison offerte
-                </p>
-              ) : (
-                <p className="shipping-note">
-                  Félicitations — <strong>Livraison offerte</strong>
-                </p>
-              )}
               <div className="cart-total-line">
                 <span>Sous-total</span>
                 <span>{total.toFixed(3).replace('.', ',')} DT</span>
               </div>
-              <Link to="/commande" onClick={() => setIsOpen(false)} className="btn btn-primary btn-block">
+              <div className="cart-total-line" style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                <span>Livraison sécurisée</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                  {shippingCost.toFixed(3).replace('.', ',')} DT
+                </span>
+              </div>
+              <div className="cart-total-line" style={{ borderTop: '1px solid var(--border)', paddingTop: '0.65rem', marginTop: '0.4rem' }}>
+                <span style={{ fontWeight: 600 }}>Total à régler</span>
+                <span style={{ fontWeight: 700, color: 'var(--ink)', fontSize: '1.1rem' }}>
+                  {grandTotal.toFixed(3).replace('.', ',')} DT
+                </span>
+              </div>
+              <Link to="/commande" onClick={() => setIsOpen(false)} className="btn btn-primary btn-block" style={{ marginTop: '0.85rem' }}>
                 Passer commande <ArrowRight size={15} strokeWidth={1.8} />
               </Link>
             </div>

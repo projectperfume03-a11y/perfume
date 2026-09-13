@@ -5,7 +5,7 @@ import { api } from '../api.js';
 import { useCart } from '../context/CartContext.jsx';
 
 export default function CheckoutPage() {
-  const { items, total, clearCart } = useCart();
+  const { items, total, shippingCost, clearCart } = useCart();
   const navigate = useNavigate();
   const [form, setForm] = useState({
     customerName: '',
@@ -17,7 +17,7 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const shipping = total >= 100 ? 0 : 9.9;
+  const shipping = shippingCost;
   const grandTotal = total + shipping;
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -213,8 +213,8 @@ export default function CheckoutPage() {
             <span>{total.toFixed(3).replace('.', ',')} DT</span>
           </div>
           <div className="summary-sub">
-            <span>Livraison</span>
-            <span>{shipping === 0 ? 'Offerte' : `${shipping.toFixed(3).replace('.', ',')} DT`}</span>
+            <span>Livraison suivie</span>
+            <span>{shipping.toFixed(3).replace('.', ',')} DT</span>
           </div>
 
           <div className="summary-divider" />

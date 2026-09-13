@@ -6,11 +6,29 @@ import { useCart } from '../context/CartContext.jsx';
 import { useToast } from '../components/Toast.jsx';
 import { PRESTIGE_PRODUCTS } from '../data/mockProducts.js';
 import {
-  LayoutGrid, List, ChevronRight, Search, ShoppingCart,
+  LayoutGrid, List, ChevronRight, ChevronLeft, Search, ShoppingCart,
   SearchX, X, Sparkles, SlidersHorizontal, Check,
+  Flower2, Leaf, Droplets, Flame, Gem, Shield,
 } from 'lucide-react';
 
+const PRODUCTS_PER_PAGE = 9;
 const MAX_PRICE = 600;
+const CATEGORY_ICONS = {
+  'Pour Elle': Sparkles,
+  'Pour Lui': Sparkles,
+  'Niche & Mixte': Gem,
+  'Floraux': Flower2,
+  'Boisés': Leaf,
+  'Frais': Droplets,
+  'Fruité': Sparkles,
+  'Musqué': Sparkles,
+  'Aquatique': Droplets,
+  'Gourmand': Sparkles,
+  'Cuir': Shield,
+  'Chypré': Leaf,
+  'Aromatic': Flame,
+  'Parfum de luxe': Gem,
+};
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
@@ -104,6 +122,32 @@ export default function ProductsPage() {
     return result;
   }, [products, activeGenre, activeCategory, search, priceRange, inStockOnly, sortOption]);
 
+  const totalPages = Math.ceil(filtered.length / PRODUCTS_PER_PAGE) || 1;
+  const pageParam = parseInt(searchParams.get('page') || '1', 10);
+  const safeCurrentPage = Math.min(Math.max(1, isNaN(pageParam) ? 1 : pageParam), totalPages);
+
+  const setPage = (newPage) => {
+    const next = Math.min(Math.max(1, newPage), totalPages);
+    const params = new URLSearchParams(searchParams);
+    if (next > 1) {
+      params.set('page', next.toString());
+    } else {
+      params.delete('page');
+    }
+    setSearchParams(params);
+
+    const mainEl = document.querySelector('.shop-main');
+    if (mainEl) {
+      const y = mainEl.getBoundingClientRect().top + window.pageYOffset - 90;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    }
+  };
+
+  const paginatedProducts = useMemo(() => {
+    const start = (safeCurrentPage - 1) * PRODUCTS_PER_PAGE;
+    return filtered.slice(start, start + PRODUCTS_PER_PAGE);
+  }, [filtered, safeCurrentPage]);
+
   const setGenre = (genre) => {
     const params = new URLSearchParams(searchParams);
     if (genre && genre !== activeGenre) {
@@ -111,6 +155,7 @@ export default function ProductsPage() {
     } else {
       params.delete('genre');
     }
+    params.delete('page');
     setSearchParams(params);
   };
 
@@ -121,6 +166,7 @@ export default function ProductsPage() {
     } else {
       params.delete('categorie');
     }
+    params.delete('page');
     setSearchParams(params);
   };
 
@@ -153,10 +199,6 @@ export default function ProductsPage() {
         <h1 className="collection-title">
           Le Vestiaire des <em>Grandes Émotions</em>
         </h1>
-        <p className="collection-lead">
-          Une collection exclusive 60% féminine et 40% masculine, sélectionnée parmi les
-          plus grandes maisons de parfum du monde pour sublimer votre présence.
-        </p>
         <div className="ornament left"><i /></div>
 
         {/* ── Puces Filtres Rapides par Genre (Mobile-First) ── */}
@@ -172,13 +214,13 @@ export default function ProductsPage() {
             onClick={() => setGenre('femme')}
           >
             <Sparkles size={13} />
-            Pour Elle <span className="pill-percent">60%</span>
+            Pour Elle
           </button>
           <button
             className={`genre-pill homme ${activeGenre === 'homme' ? 'active' : ''}`}
             onClick={() => setGenre('homme')}
           >
-            Pour Lui <span className="pill-percent">40%</span>
+            Pour Lui
           </button>
           <button
             className={`genre-pill mixte ${activeGenre === 'mixte' ? 'active' : ''}`}
@@ -205,7 +247,7 @@ export default function ProductsPage() {
           <span className="toolbar-count desktop-only">
             {loading
               ? 'Sélection…'
-              : `${filtered.length} fragrance${filtered.length > 1 ? 's' : ''}${activeGenre ? ` · ${activeGenre === 'femme' ? 'Pour Elle' : 'Pour Lui'}` : ''}`}
+              : `${filtered.length} fragrance${filtered.length > 1 ? 's' : ''}${totalPages > 1 ? ` · Page ${safeCurrentPage} / ${totalPages}` : ''}${activeGenre ? ` · ${activeGenre === 'femme' ? 'Pour Elle' : 'Pour Lui'}` : ''}`}
           </span>
         </div>
 
@@ -243,7 +285,7 @@ export default function ProductsPage() {
         <div className="active-chips">
           {activeGenre && (
             <span className="filter-chip">
-              Sélection : <b>{activeGenre === 'femme' ? 'Pour Elle (60%)' : activeGenre === 'homme' ? 'Pour Lui (40%)' : 'Niche'}</b>
+              Sélection : <b>{activeGenre === 'femme' ? 'Pour Elle' : activeGenre === 'homme' ? 'Pour Lui' : 'Niche'}</b>
               <button onClick={() => setGenre('')} aria-label="Retirer le genre">
                 <X size={12} strokeWidth={2} />
               </button>
@@ -316,21 +358,30 @@ export default function ProductsPage() {
             <ul className="cat-list">
               <li>
                 <button className={!activeCategory ? 'active' : ''} onClick={() => { setCategory(''); setMobileFilterOpen(false); }}>
-                  Toutes les familles
+                  <span className="cat-label-with-icon">
+                    <Sparkles size={14} className="cat-list-icon" />
+                    <span>Toutes les familles</span>
+                  </span>
                   <span className="cat-count">{products.length}</span>
                 </button>
               </li>
-              {categories.map((c) => (
-                <li key={c}>
-                  <button
-                    className={activeCategory === c ? 'active' : ''}
-                    onClick={() => { setCategory(c); setMobileFilterOpen(false); }}
-                  >
-                    {c}
-                    <span className="cat-count">{products.filter((p) => p.category === c).length}</span>
-                  </button>
-                </li>
-              ))}
+              {categories.map((c) => {
+                const Icon = CATEGORY_ICONS[c] || Sparkles;
+                return (
+                  <li key={c}>
+                    <button
+                      className={activeCategory === c ? 'active' : ''}
+                      onClick={() => { setCategory(c); setMobileFilterOpen(false); }}
+                    >
+                      <span className="cat-label-with-icon">
+                        <Icon size={14} className="cat-list-icon" />
+                        <span>{c}</span>
+                      </span>
+                      <span className="cat-count">{products.filter((p) => p.category === c).length}</span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
@@ -415,13 +466,13 @@ export default function ProductsPage() {
             </div>
           ) : viewMode === 'grid' ? (
             <div className="grid-products">
-              {filtered.map((p) => (
+              {paginatedProducts.map((p) => (
                 <ProductCard key={p._id} product={p} />
               ))}
             </div>
           ) : (
             <div className="list-products">
-              {filtered.map((p) => {
+              {paginatedProducts.map((p) => {
                 const outOfStock = p.inStock === false;
                 const desc = (p.description || '').trim();
                 const descWords = desc.split(/\s+/);
@@ -469,6 +520,54 @@ export default function ProductsPage() {
                   </article>
                 );
               })}
+            </div>
+          )}
+
+          {/* ── Pagination Haute Parfumerie ── */}
+          {totalPages > 1 && (
+            <div className="roya-pagination-container">
+              <nav className="roya-pagination" aria-label="Pagination des créations">
+                <button
+                  type="button"
+                  className="roya-page-nav roya-page-prev"
+                  onClick={() => setPage(safeCurrentPage - 1)}
+                  disabled={safeCurrentPage <= 1}
+                  aria-label="Page précédente"
+                >
+                  <ChevronLeft size={16} strokeWidth={2} />
+                  <span>Précédent</span>
+                </button>
+
+                <div className="roya-page-numbers">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pNum) => (
+                    <button
+                      key={pNum}
+                      type="button"
+                      className={`roya-page-num ${pNum === safeCurrentPage ? 'active' : ''}`}
+                      onClick={() => setPage(pNum)}
+                      aria-label={`Page ${pNum}`}
+                      aria-current={pNum === safeCurrentPage ? 'page' : undefined}
+                    >
+                      {pNum}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  className="roya-page-nav roya-page-next"
+                  onClick={() => setPage(safeCurrentPage + 1)}
+                  disabled={safeCurrentPage >= totalPages}
+                  aria-label="Page suivante"
+                >
+                  <span>Suivant</span>
+                  <ChevronRight size={16} strokeWidth={2} />
+                </button>
+              </nav>
+
+              <p className="roya-pagination-info">
+                Affichage des créations {(safeCurrentPage - 1) * PRODUCTS_PER_PAGE + 1} à {Math.min(safeCurrentPage * PRODUCTS_PER_PAGE, filtered.length)} sur {filtered.length}
+              </p>
             </div>
           )}
         </main>

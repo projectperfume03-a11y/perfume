@@ -36,7 +36,7 @@ export default function Header() {
   return (
     <>
       <div className="announce-bar">
-        Livraison Prestige Offerte dès <em>200 DT</em> · Curation Haute Parfumerie Pour Elle & Pour Lui
+        Livraison disponible partout en Tunisie · Curation Haute Parfumerie Pour Elle & Pour Lui
       </div>
 
       <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
@@ -47,12 +47,7 @@ export default function Header() {
 
           <nav className="main-nav desktop-only" aria-label="Navigation principale">
             <NavLink to="/" end className={navClass}>Accueil</NavLink>
-            <NavLink to="/produits?genre=femme" className="nav-link nav-link-femme">
-              Pour Elle <span className="nav-pill-mini">60%</span>
-            </NavLink>
-            <NavLink to="/produits?genre=homme" className="nav-link nav-link-homme">
-              Pour Lui <span className="nav-pill-mini">40%</span>
-            </NavLink>
+        
             <NavLink to="/produits" className={navClass}>Collection</NavLink>
             <NavLink to="/contact" className={navClass}>Contact</NavLink>
           </nav>
