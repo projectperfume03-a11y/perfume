@@ -330,6 +330,12 @@ export default function ProductsPage() {
       )}
 
       <div className="shop-layout">
+        {/* ── Backdrop overlay ── */}
+        <div
+          className={`filter-drawer-backdrop ${mobileFilterOpen ? 'is-visible' : ''}`}
+          onClick={() => setMobileFilterOpen(false)}
+        />
+
         {/* ── Sidebar Filtres (Desktop + Drawer Mobile) ── */}
         <aside className={`filters ${mobileFilterOpen ? 'mobile-open' : ''}`}>
           <div className="filters-drawer-header mobile-only">

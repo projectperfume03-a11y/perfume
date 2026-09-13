@@ -228,9 +228,30 @@
   .d-perks { grid-template-columns: 1fr; }
 }
 
-/* ── Barre Achat Flottante Mobile ── */
-.mobile-sticky-buy-bar {
-  display: none;
+@media (max-width: 768px) {
+  .page-detail { padding: 1.5rem 0 6rem; }
+  .detail-grid { gap: 1.8rem; }
+  .d-title { font-size: clamp(1.7rem, 5.5vw, 2.2rem); }
+  .d-price { font-size: 1.6rem; flex-direction: column; gap: 0.3rem; padding-bottom: 1.2rem; margin-bottom: 1.2rem; }
+  .d-price small { font-size: 0.6rem; }
+  .d-desc { font-size: 0.92rem; margin-bottom: 1.5rem; }
+  .d-thumbs { gap: 0.6rem; margin-top: 0.6rem; }
+  .d-thumb { border-radius: var(--radius-sm); }
+  .buy-row { flex-direction: column; gap: 0.8rem; }
+  .buy-row > .btn { width: 100%; flex: none; }
+  .qty-box { width: 100%; justify-content: center; }
+  .qty-box button { width: 52px; height: 52px; }
+  .d-perks { gap: 0.8rem; padding-top: 1.4rem; }
+  .d-perks li { font-size: 0.82rem; gap: 0.7rem; }
+  .d-rating { margin-bottom: 1rem; }
+  .d-rating span { font-size: 0.68rem; }
+  .d-meta-header { gap: 0.5rem; }
+  .d-gender-pill { font-size: 0.58rem; padding: 3px 8px; }
+  .d-brand-tag { font-size: 0.56rem; padding: 3px 8px; top: 10px; left: 10px; }
+  .olfactory-pyramid { padding: 1rem 1.2rem; margin-bottom: 1.5rem; }
+  .pyramid-title { font-size: 1rem; margin-bottom: 0.7rem; }
+  .p-value { font-size: 0.82rem; }
+  .stock-chip { font-size: 0.62rem; padding: 0.45rem 0.85rem; margin-bottom: 1.2rem; }
 }
 
 @media (max-width: 768px) {
@@ -267,6 +288,16 @@
     font-weight: 700;
     color: var(--rose-gold);
   }
+}
+
+@media (max-width: 420px) {
+  .mobile-sticky-buy-bar {
+    bottom: 58px;
+    padding: 0.5rem 0.8rem;
+  }
+  .msb-name { font-size: 0.78rem; max-width: 140px; }
+  .msb-price { font-size: 0.85rem; }
+  .mobile-sticky-buy-bar .btn { min-height: 36px; padding: 0.4rem 0.8rem; font-size: 0.68rem; }
 }
 
 /* ── Produits liés ── */

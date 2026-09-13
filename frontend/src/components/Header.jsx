@@ -35,19 +35,30 @@ export default function Header() {
 
   return (
     <>
-      <div className="announce-bar">
-        Livraison disponible partout en Tunisie · Curation Haute Parfumerie Pour Elle & Pour Lui
+      <div className="announce-bar mobile-announce-hide">
+        Livraison partout en Tunisie · Curation Haute Parfumerie
       </div>
 
       <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
         <div className="container header-inner">
-          <Link to="/" aria-label="ROYA — Accueil">
+          <button
+            ref={menuButtonRef}
+            className={`burger-toggle mobile-only ${menuOpen ? 'open' : ''}`}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Menu"
+            aria-expanded={menuOpen}
+          >
+            <span className="burger-line" />
+            <span className="burger-line" />
+            <span className="burger-line" />
+          </button>
+
+          <Link to="/" aria-label="ROYA — Accueil" className="header-logo-link">
             <img src="/roya-wordmark-gold.png" alt="ROYA Haute Parfumerie" className="logo-img" />
           </Link>
 
           <nav className="main-nav desktop-only" aria-label="Navigation principale">
             <NavLink to="/" end className={navClass}>Accueil</NavLink>
-        
             <NavLink to="/produits" className={navClass}>Collection</NavLink>
             <NavLink to="/contact" className={navClass}>Contact</NavLink>
           </nav>
@@ -61,18 +72,6 @@ export default function Header() {
               <ShoppingBag size={21} strokeWidth={1.4} />
               {count > 0 && <span className="cart-badge">{count}</span>}
             </button>
-
-            <button
-              ref={menuButtonRef}
-              className={`burger-toggle mobile-only ${menuOpen ? 'open' : ''}`}
-              onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Menu"
-              aria-expanded={menuOpen}
-            >
-              <span className="burger-line" />
-              <span className="burger-line" />
-              <span className="burger-line" />
-            </button>
           </div>
         </div>
       </header>
@@ -84,8 +83,9 @@ export default function Header() {
       >
         <div className="mobile-panel-inner">
           <div className="mp-header-brand">
-            <img src="/roya-wordmark-gold.png" alt="ROYA" className="mp-logo" />
-            <span className="mobile-panel-label">Haute Parfumerie</span>
+            <Link to="/" className="mp-logo-link" onClick={() => setMenuOpen(false)}>
+              <img src="/roya-wordmark-gold.png" alt="ROYA" className="mp-logo" />
+            </Link>
           </div>
 
           <nav className="mobile-panel-nav" aria-label="Navigation mobile">
@@ -97,14 +97,12 @@ export default function Header() {
               className={`mp-link-femme ${location.search.includes('genre=femme') ? 'active' : ''}`}
             >
               <span>Pour Elle</span>
-              <span className="mp-badge-tag rose">60% Curation</span>
             </Link>
             <Link
               to="/produits?genre=homme"
               className={`mp-link-homme ${location.search.includes('genre=homme') ? 'active' : ''}`}
             >
               <span>Pour Lui</span>
-              <span className="mp-badge-tag gold">40% Curation</span>
             </Link>
             <Link
               to="/produits"
@@ -116,25 +114,9 @@ export default function Header() {
               to="/contact"
               className={location.pathname === '/contact' ? 'active' : ''}
             >
-              <span>Conseil & Atelier</span>
+              <span>Contact</span>
             </Link>
           </nav>
-
-          <div className="mobile-panel-footer">
-            <p className="mp-tagline">
-              L'excellence du parfum de marque,
-              <br />
-              sublimé pour chaque personnalité.
-            </p>
-            <div className="mp-socials">
-              <a href="#">Instagram</a>
-              <a href="#">WhatsApp</a>
-              <a href="#">Facebook</a>
-            </div>
-            <span className="mp-copy">
-              © {new Date().getFullYear()} ROYA — Maison de Haute Parfumerie
-            </span>
-          </div>
         </div>
       </div>
     </>
