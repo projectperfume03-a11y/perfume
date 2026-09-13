@@ -12,14 +12,15 @@
 .d-main {
   position: relative;
   overflow: hidden;
-  background: var(--sand);
+  background: linear-gradient(135deg, var(--sand) 0%, var(--linen) 100%);
   border: 1px solid var(--border);
   aspect-ratio: 1 / 1;
+  border-radius: var(--radius-sm);
 }
 .d-main::after {
   content: '';
   position: absolute; inset: 14px;
-  border: 1px solid rgba(253, 250, 244, 0.4);
+  border: 1px solid rgba(253, 250, 244, 0.35);
   pointer-events: none;
 }
 .d-main img {
@@ -59,6 +60,7 @@
   font-size: clamp(2.3rem, 3.8vw, 3.3rem);
   line-height: 1.08;
   margin-bottom: 1.15rem;
+  letter-spacing: -0.015em;
 }
 .d-rating {
   display: flex; align-items: center; gap: 0.65rem;
@@ -70,7 +72,7 @@
 }
 .d-price {
   font-family: var(--font-serif);
-  font-size: 2.15rem; font-weight: 600;
+  font-size: 2.2rem; font-weight: 600;
   color: var(--ink);
   display: flex; align-items: baseline; gap: 0.9rem;
   padding-bottom: 1.75rem;
@@ -94,9 +96,10 @@
   padding: 0.55rem 1.1rem;
   border-radius: var(--radius-sm);
   margin-bottom: 1.9rem;
+  font-weight: 500;
 }
-.stock-chip.ok { background: var(--success-soft, rgba(125,148,100,0.16)); color: #5c7047; border: 1px solid rgba(125, 148, 100, 0.35); }
-.stock-chip.out { background: rgba(192, 86, 74, 0.1); color: var(--danger); border: 1px solid rgba(192, 86, 74, 0.32); }
+.stock-chip.ok { background: rgba(96, 136, 82, 0.1); color: #5c7047; border: 1px solid rgba(96, 136, 82, 0.3); }
+.stock-chip.out { background: rgba(184, 71, 60, 0.08); color: var(--danger); border: 1px solid rgba(184, 71, 60, 0.25); }
 
 .buy-row {
   display: flex; gap: 1.1rem; flex-wrap: wrap;
@@ -106,7 +109,7 @@
   display: inline-flex; align-items: center;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  background: var(--ivory);
+  background: #fff;
 }
 .qty-box button {
   width: 46px; height: 50px;
@@ -114,10 +117,10 @@
   font-size: 1.15rem; color: var(--text-secondary);
   transition: color var(--transition-fast), background var(--transition-fast);
 }
-.qty-box button:hover { color: var(--ink); background: var(--linen); }
+.qty-box button:hover { color: var(--gold); background: rgba(197, 159, 91, 0.06); }
 .qty-box span {
   width: 44px; text-align: center;
-  font-weight: 500; font-size: 1.02rem;
+  font-weight: 600; font-size: 1.02rem;
 }
 .buy-row > .btn { flex: 1 1 220px; }
 
@@ -146,42 +149,43 @@
   position: absolute;
   top: 16px;
   left: 16px;
-  background: rgba(18, 15, 19, 0.85);
+  background: rgba(18, 15, 19, 0.88);
   color: var(--gold-soft);
   font-size: 0.64rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: var(--radius-sm);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(197, 159, 91, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(197, 159, 91, 0.25);
   z-index: 3;
+  font-weight: 500;
 }
 .d-gender-pill {
   font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 999px;
 }
 .d-gender-pill.femme {
-  background: rgba(201, 138, 114, 0.18);
+  background: rgba(201, 138, 114, 0.14);
   color: var(--rose-gold);
-  border: 1px solid rgba(201, 138, 114, 0.4);
+  border: 1px solid rgba(201, 138, 114, 0.35);
 }
 .d-gender-pill.homme {
-  background: rgba(18, 16, 19, 0.85);
+  background: rgba(18, 16, 19, 0.88);
   color: var(--gold-soft);
-  border: 1px solid rgba(197, 159, 91, 0.4);
+  border: 1px solid rgba(197, 159, 91, 0.35);
 }
 
 /* ── Pyramide Olfactive ── */
 .olfactory-pyramid {
-  background: var(--blush-silk);
-  border: 1px solid rgba(201, 138, 114, 0.25);
+  background: linear-gradient(135deg, var(--blush-silk) 0%, rgba(251, 245, 239, 0.7) 100%);
+  border: 1px solid rgba(201, 138, 114, 0.2);
   border-radius: var(--radius-md);
-  padding: 1.4rem 1.6rem;
+  padding: 1.5rem 1.7rem;
   margin-bottom: 2rem;
 }
 .pyramid-title {
@@ -261,14 +265,15 @@
     bottom: 64px;
     left: 0;
     right: 0;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(12px);
-    border-top: 1px solid rgba(201, 138, 114, 0.25);
-    padding: 0.65rem 1rem;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(201, 138, 114, 0.2);
+    padding: 0.6rem 1rem;
     align-items: center;
     justify-content: space-between;
     z-index: 998;
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
   }
   .msb-info {
     display: flex;

@@ -4,6 +4,7 @@
 .contact-hero h1 {
   font-size: clamp(2.4rem, 4vw, 3.4rem);
   margin: 1.15rem 0 1rem;
+  letter-spacing: -0.015em;
 }
 .contact-hero p {
   color: var(--text-secondary); font-size: 1.05rem; font-weight: 300; line-height: 1.85;
@@ -20,67 +21,81 @@
 @media (max-width: 768px) {
   .page-contact { padding: 3rem 0 6rem; }
   .contact-hero { margin-bottom: 2.5rem; }
-  .contact-card { padding: 2.5rem 1.5rem; }
-  .contact-value { font-size: 1.2rem; }
-  .custom-project { padding: 2.5rem 1.5rem; }
-  .custom-project h3 { font-size: 1.6rem; }
+  .contact-card { padding: 2.2rem 1.5rem; }
+  .contact-value { font-size: 1.15rem; }
+  .custom-project { padding: 2.2rem 1.2rem; }
+  .custom-project h3 { font-size: 1.55rem; }
+  .custom-project .btn { width: 100%; max-width: 320px; }
 }
 .contact-card {
   background: var(--ivory);
   border: 1px solid var(--border);
-  padding: 3.75rem 2rem;
+  padding: 3.5rem 2rem;
   text-align: center;
   transition: transform var(--transition-smooth), box-shadow var(--transition-smooth), border-color var(--transition-fast);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 16px rgba(20, 17, 21, 0.03);
 }
 .contact-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
   border-color: var(--gold-soft);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 12px 36px rgba(201, 138, 114, 0.12);
 }
 .contact-ring {
-  width: 62px; height: 62px;
-  border: 1px solid var(--gold);
+  width: 64px; height: 64px;
+  border: 1.5px solid var(--gold);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   color: var(--gold);
   margin: 0 auto 1.75rem;
   transition: all var(--transition-fast);
+  background: rgba(197, 159, 91, 0.04);
 }
 .contact-card:hover .contact-ring {
   background: var(--gold); color: var(--ivory);
+  transform: scale(1.05);
 }
-.contact-card h2 { font-size: 1.65rem; margin-bottom: 0.7rem; }
+.contact-card h2 {
+  font-size: 1.65rem; margin-bottom: 0.7rem;
+  letter-spacing: -0.01em;
+}
 .contact-card p {
   color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.4rem;
+  line-height: 1.65;
 }
 .contact-value {
   font-family: var(--font-serif);
-  font-size: 1.45rem; font-weight: 600;
+  font-size: 1.4rem; font-weight: 600;
   color: var(--ink); letter-spacing: 0.04em;
 }
 
 .custom-project {
   max-width: 880px;
   margin: 4rem auto 0;
-  background: var(--wood-900);
-  border: 1px solid rgba(201, 171, 119, 0.22);
+  background: linear-gradient(160deg, var(--noir-900) 0%, var(--noir-950) 100%);
+  border: 1px solid rgba(201, 171, 119, 0.2);
   color: var(--ivory);
   text-align: center;
   padding: 4.25rem 2.5rem;
   position: relative;
   overflow: hidden;
+  display: flex; flex-direction: column; align-items: center;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 16px 48px rgba(18, 16, 19, 0.25);
 }
 .custom-project::after {
   content: '';
   position: absolute; inset: 12px;
-  border: 1px solid rgba(201, 171, 119, 0.16);
+  border: 1px solid rgba(201, 171, 119, 0.14);
   pointer-events: none;
+  border-radius: 2px;
 }
-.custom-project h3 { color: var(--ivory); font-size: 2.1rem; margin-bottom: 1.15rem; }
-.custom-project h3 em { color: var(--gold-soft); }
+.custom-project h3 { color: var(--ivory); font-size: 2.1rem; margin-bottom: 1.15rem; letter-spacing: -0.01em; }
+.custom-project h3 em { color: var(--gold-soft); font-style: italic; }
 .custom-project p {
   color: #b7a68e; font-weight: 300; line-height: 1.85;
   max-width: 640px; margin: 0 auto 2.4rem;
+  font-size: 1.02rem;
 }
 
 /* ── Footer ── */
@@ -301,11 +316,11 @@
 
 /* ── Responsive global ── */
 @media (max-width: 768px) {
-  .container { padding: 0 1.25rem; }
-  .section { padding: 4.5rem 0; }
+  .container { padding: 0 1rem; }
+  .section { padding: 4rem 0; }
   .section-head { margin-bottom: 3rem; }
-  h1 { font-size: clamp(2rem, 7.5vw, 2.6rem); }
-  h2 { font-size: clamp(1.6rem, 5.5vw, 2.1rem); }
+  h1 { font-size: clamp(1.8rem, 7.5vw, 2.4rem); }
+  h2 { font-size: clamp(1.5rem, 5.5vw, 2rem); }
 }
 
 @media (prefers-reduced-motion: reduce) {

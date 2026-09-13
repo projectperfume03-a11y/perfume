@@ -207,7 +207,8 @@ export default function ProductsPage() {
             className={`genre-pill ${!activeGenre ? 'active' : ''}`}
             onClick={() => setGenre('')}
           >
-            Tous les Sillages ({products.length})
+            <span className="pill-label-desktop">Tous les Sillages ({products.length})</span>
+            <span className="pill-label-mobile">Tous ({products.length})</span>
           </button>
           <button
             className={`genre-pill femme ${activeGenre === 'femme' ? 'active' : ''}`}
@@ -239,8 +240,8 @@ export default function ProductsPage() {
             onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
             aria-label="Ouvrir les filtres de recherche"
           >
-            <SlidersHorizontal size={15} />
-            <span>Filtres & Budget</span>
+            <SlidersHorizontal size={14} />
+            <span>Filtres</span>
             {hasActiveFilters && <span className="filter-count-dot" />}
           </button>
 
@@ -252,7 +253,15 @@ export default function ProductsPage() {
         </div>
 
         <div className="toolbar-right">
-          <label className="toolbar-sort">
+          <label className="toolbar-sort mobile-only">
+            <select className="sort-select" value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+              <option value="popularity">Popularité</option>
+              <option value="price-asc">Prix ↑</option>
+              <option value="price-desc">Prix ↓</option>
+            </select>
+          </label>
+
+          <label className="toolbar-sort desktop-only">
             <span>Trier</span>
             <select className="sort-select" value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
               <option value="popularity">Popularité & Signatures</option>

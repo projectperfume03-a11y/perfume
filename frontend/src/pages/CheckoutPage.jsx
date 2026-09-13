@@ -97,29 +97,29 @@ export default function CheckoutPage() {
               </div>
 
               <div className="field">
-                <label htmlFor="co-email">E-mail <em>*</em></label>
+                <label htmlFor="co-phone">Téléphone <em>*</em></label>
+                <input
+                  id="co-phone"
+                  required
+                  type="tel"
+                  className="input"
+                  value={form.customerPhone}
+                  onChange={set('customerPhone')}
+                  placeholder="06 12 34 56 78"
+                  autoComplete="tel"
+                />
+              </div>
+
+              <div className="field">
+                <label htmlFor="co-email">E-mail <span style={{ color: 'var(--text-muted)', textTransform: 'none', letterSpacing: 0 }}>(facultatif)</span></label>
                 <input
                   id="co-email"
-                  required
                   type="email"
                   className="input"
                   value={form.customerEmail}
                   onChange={set('customerEmail')}
                   placeholder="vous@exemple.com"
                   autoComplete="email"
-                />
-              </div>
-
-              <div className="field">
-                <label htmlFor="co-phone">Téléphone <em>*</em></label>
-                <input
-                  id="co-phone"
-                  required
-                  className="input"
-                  value={form.customerPhone}
-                  onChange={set('customerPhone')}
-                  placeholder="06 12 34 56 78"
-                  autoComplete="tel"
                 />
               </div>
 
