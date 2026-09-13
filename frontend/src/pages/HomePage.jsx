@@ -99,8 +99,8 @@ export default function HomePage() {
             </h1>
 
             <p className="hero-sub">
-              Une sélection exclusive des plus grandes maisons de luxe. 60% d'essences
-              féminines lumineuses et sensuelles, harmonisées à 40% de sillages masculins
+              Une sélection exclusive des plus grandes maisons de luxe. pleine d'essences
+              féminines lumineuses et sensuelles, harmonisées aux sillages masculins
               profonds et captivants.
             </p>
 
