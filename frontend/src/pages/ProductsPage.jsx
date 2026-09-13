@@ -11,7 +11,7 @@ import {
   Flower2, Leaf, Droplets, Flame, Gem, Shield,
 } from 'lucide-react';
 
-const PRODUCTS_PER_PAGE = 9;
+const PRODUCTS_PER_PAGE = 6;
 const MAX_PRICE = 600;
 const CATEGORY_ICONS = {
   'Pour Elle': Sparkles,
